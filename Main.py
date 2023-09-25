@@ -1,4 +1,13 @@
 import random
+import tkinter
+from tkinter import *
+import keyboard
+from PIL import Image, ImageTk
+
+
+
+
+
 #Pelaajan tiedot:
 playerName = 'player'
 
@@ -15,41 +24,23 @@ class Ritari:
     inventory = []
 
     #Taidot
-    def basicAttack(self,vihollinen):
-        vihollinen - random.randint(self.attackMin, self.attackMax)
+    def basicAttack(self, vihollinen):
+        damage = random.randint(self.attackMin, self.attackMax)
+        vihollinen.hp -= damage
 
-    #Ui
-    sprite = ["      _,.",
-              "    ,` -.)",
-              "   ( _/-\\\\-._",
-              "  /,|`--._,-^|            ,",
-              "  \_| |`-._/||          ,'|",
-              "    |  `-, / |         /  /",
-              "    |     || |        /  /",
-              "     `r-._||/   __   /  /",
-              " __,-<_     )`-/  `./  /",
-              "'  \   `---'   \   /  /",
-              "    |           |./  /",
-              "    /           //  /",
-              "\_/' \         |/  /",
-              " |    |   _,^-'/  /",
-              " |    , ``  (\/  /_",
-              "  \,.->._    \X-=/^",
-              "  (  /   `-._//^`",
-              "   `Y-.____(__}",
-              "    |     {__)",
-              "          ()"]
 
-#Viholliset
+#Enemies
 class Goblini:
 
     #stats:
+    name = "Goblin"
     maxHp = 20
     hp = 20
-    hyokkaysArvoMin = 5
-    hyokkausArvoMax = 10
 
-#Esineet:
+
+
+
+#Items:
 def healingPotion(player):
     player + 10
 
@@ -63,5 +54,36 @@ def greaterSpPotion(player):
     player + 25
 
 ritari = Ritari
-for x in ritari.sprite:
-    print(x)
+
+
+#Combat funktion
+def fight(player, enemy):
+    currentEnemy = enemy()
+    while True:
+
+        print(f"    {playerName}                        {currentEnemy.name}  \n"
+              f"----------------            ----------------\n"
+              f"  HP: {player.hp} / {player.maxHp}               HP: {currentEnemy.hp} / {currentEnemy.maxHp}   \n"
+              f"  SP: {player.sp} / {player.maxSp}               ----------------\n"
+              f"----------------")
+        print("  (1) Aatack     ")
+        print(" --------------- ")
+        userInput = input()
+        if userInput == "1":
+            player.basicAttack(player, currentEnemy)
+
+        if player.hp <= 0:
+            print("GAME OVER")
+            break
+        elif currentEnemy.hp <= 0:
+            print("VICTORY")
+            break
+
+
+fight(ritari,Goblini)
+fight(ritari,Goblini)
+
+
+
+
+
