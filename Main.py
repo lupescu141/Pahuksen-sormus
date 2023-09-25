@@ -66,7 +66,7 @@ def fight(player, enemy):
               f"  HP: {player.hp} / {player.maxHp}               HP: {currentEnemy.hp} / {currentEnemy.maxHp}   \n"
               f"  SP: {player.sp} / {player.maxSp}               ----------------\n"
               f"----------------")
-        print("  (1) Aatack     ")
+        print("  (1) Attack     ")
         print(" --------------- ")
         userInput = input()
         if userInput == "1":
