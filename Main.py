@@ -1,17 +1,22 @@
 import random
 import mysql.connector
 from mysql.connector import errorcode
+import random
+import keyboard
+
 
 #Tietokannan asetukset:
-database = {'user': 'root',
+tietokanta = {'user': 'root',
             'password': 'h93cx3et',
             'host': '127.0.0.1',
             'database': 'pahuksen_sormus',
-            'raise_on_warnings': True}
+            'raise_on_warnings': True,
+            'autocommit': True}
+
 
 #Tässä yritetään yhdistää tietokantaan ja palautetaan error viesti jos ei pysty
 try:
-    connection = mysql.connector.connect(**database)
+    yhteys = mysql.connector.connect(**tietokanta)
 
 except mysql.connector.errors.Error as err:
 
@@ -23,7 +28,6 @@ except mysql.connector.errors.Error as err:
 
     else:
         print(err)
-
 else:
     print("Connection: Succesful")
 
