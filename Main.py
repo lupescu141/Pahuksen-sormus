@@ -13,6 +13,27 @@ tietokanta = {'user': 'root',
             'raise_on_warnings': True,
             'autocommit': True}
 
+#Oliot
+class Pelaaja:
+    def __init__(self,peli_id,pelaajan_nimi,menneet_paivat,pelaaja_hp,pelaaja_suojaus,pelaaja_isku,pelaaja_taitopiste):
+        self.id = peli_id
+        self.nimi = pelaajan_nimi
+        self.menneet_paivat = menneet_paivat
+        self.hp = pelaaja_hp
+        self.suojaus = pelaaja_suojaus
+        self.isku = pelaaja_isku
+        self.taitopiste = pelaaja_taitopiste
+
+    inventaario = []
+
+class Vihollinen:
+    def __init__(self, vihollinen_id, vihollinen_nimi, vihollinen_hp, vihollinen_suojaus, vihollinen_isku):
+        self.id = vihollinen_id
+        self.nimi = vihollinen_nimi
+        self.hp = vihollinen_hp
+        self.suojaus = vihollinen_suojaus
+        self.isku = vihollinen_isku
+
 
 #Tässä yritetään yhdistää tietokantaan ja palautetaan error viesti jos ei pysty
 try:
