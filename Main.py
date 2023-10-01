@@ -92,7 +92,7 @@ def luo_peli():
             print('Et voi antaa tyhjää nimeä.')
 
         elif len(nimi) > 12:
-            print('Maksimi nimi on 12 merkkiä pitkä')
+            print('Nimen maksimipituus on 12 merkkiä pitkä')
 
         else:
             break
