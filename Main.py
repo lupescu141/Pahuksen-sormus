@@ -73,7 +73,7 @@ def paavalikko():
             break
 
         if keyboard.is_pressed("2"):
-            Pelaaja = luo_pelaaja(lataa_peli())
+            pelaaja = luo_pelaaja(lataa_peli())
             break
 
         if keyboard.is_pressed("3"):
