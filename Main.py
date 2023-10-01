@@ -69,7 +69,7 @@ def paavalikko():
     while True:
 
         if keyboard.is_pressed("1"):
-            luo_peli()
+            pelaaja = luo_pelaaja(luo_peli())
             break
 
         if keyboard.is_pressed("2"):
@@ -109,10 +109,9 @@ def luo_peli():
     pelaajan_id = pelaajan_id_sanakirja['peli_id']
     return pelaajan_id
 
-#Hakee viholliset tietokannasta
-def hae_viholliset():
-
-    sql = 'select * from viholliset'
+#Hakee viholliset tietokannasta ja palauttaa vihollinen olion
+def hae_random_vihollinen():
+    sql = 'SELECT * FROM viholliset ORDER by RAND() LIMIT 1'
     kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
     haku_tiedot = kursori.fetchone()
