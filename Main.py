@@ -1,20 +1,17 @@
-import random
 import mysql.connector
 from mysql.connector import errorcode
-import random
 import keyboard
 import random
 
-
-#Tietokannan asetukset:
+# Tietokannan asetukset:
 tietokanta = {'user': 'root',
-            'password': 'h93cx3et',
-            'host': '127.0.0.1',
-            'database': 'pahuksen_sormus',
-            'raise_on_warnings': True,
-            'autocommit': True}
+              'password': 'h93cx3et',
+              'host': '127.0.0.1',
+              'database': 'pahuksen_sormus',
+              'raise_on_warnings': True,
+              'autocommit': True}
 
-#Tässä yritetään yhdistää tietokantaan ja palautetaan error viesti jos ei pysty
+# Tässä yritetään yhdistää tietokantaan ja palautetaan error viesti jos ei pysty
 try:
     yhteys = mysql.connector.connect(**tietokanta)
 
@@ -28,13 +25,14 @@ except mysql.connector.errors.Error as err:
 else:
     print("Connection: Succesful")
 
-#Listat
+
+# Listat
 
 
-
-#Oliot
+# Oliot
 class Pelaaja:
-    def __init__(self,peli_id,pelaaja_nimi,pelaaja_sijainti, menneet_paivat,pelaaja_hp,pelaaja_suojaus,pelaaja_isku,pelaaja_taitopiste):
+    def __init__(self, peli_id, pelaaja_nimi, pelaaja_sijainti, menneet_paivat, pelaaja_hp, pelaaja_suojaus,
+                 pelaaja_isku, pelaaja_taitopiste):
         self.id = peli_id
         self.nimi = pelaaja_nimi
         self.sijainti = pelaaja_sijainti
@@ -56,16 +54,15 @@ class Vihollinen:
         self.isku = vihollinen_isku
 
 
-#FUNKTIOT:
+# FUNKTIOT:
 
-#Päävalikon ohjaukseen
+# Päävalikon ohjaukseen
 def paavalikko():
-#Hakee txt tiedoston ja tulostaa päävalikon visuaalisen tekstin
+    # Hakee txt tiedoston ja tulostaa päävalikon visuaalisen tekstin
     for x in open(file="paavalikkoTeksti.txt"):
         print(f"        {x}", end="")
 
-
-#Ottaa vastaan käyttäjän näppäin painalluksen ja toteuttaa tietyn funktion
+    # Ottaa vastaan käyttäjän näppäin painalluksen ja toteuttaa tietyn funktion
     while True:
 
         if keyboard.is_pressed("1"):
@@ -82,9 +79,9 @@ def paavalikko():
 
     return pelaaja
 
-#Tämä luo uuden tallennuksen tietokantaan eli uuden pelin
-def luo_peli():
 
+# Tämä luo uuden tallennuksen tietokantaan eli uuden pelin
+def luo_peli():
     while True:
         nimi = input('Anna hahmollesi nimi: ')
 
@@ -109,26 +106,32 @@ def luo_peli():
     pelaajan_id = pelaajan_id_sanakirja['peli_id']
     return pelaajan_id
 
-#Hakee viholliset tietokannasta ja palauttaa vihollinen olion
+
+# Hakee viholliset tietokannasta ja palauttaa vihollinen olion
 def hae_random_vihollinen():
     sql = 'SELECT * FROM viholliset ORDER by RAND() LIMIT 1'
     kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
     haku_tiedot = kursori.fetchone()
-    vihollinen = Vihollinen(haku_tiedot['vihollinen_id'], haku_tiedot['vihollinen_nimi'], haku_tiedot['vihollinen_hp'], haku_tiedot['vihollinen_suojaus'], haku_tiedot['vihollinen_isku'])
+    vihollinen = Vihollinen(haku_tiedot['vihollinen_id'], haku_tiedot['vihollinen_nimi'], haku_tiedot['vihollinen_hp'],
+                            haku_tiedot['vihollinen_suojaus'], haku_tiedot['vihollinen_isku'])
     return vihollinen
+
 
 def luo_pelaaja(peli_id):
     sql = f'SELECT * FROM peli WHERE peli_id = "{peli_id}"'
     kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
     haku_tiedot = kursori.fetchone()
-    pelaaja = Pelaaja(haku_tiedot['peli_id'], haku_tiedot['pelaaja_nimi'], haku_tiedot['pelaaja_sijainti'], haku_tiedot['menneet_paivat'],
-                      haku_tiedot['pelaaja_hp'], haku_tiedot['pelaaja_suojaus'], haku_tiedot['pelaaja_isku'], haku_tiedot['pelaaja_taitopiste'])
+    pelaaja = Pelaaja(haku_tiedot['peli_id'], haku_tiedot['pelaaja_nimi'], haku_tiedot['pelaaja_sijainti'],
+                      haku_tiedot['menneet_paivat'],
+                      haku_tiedot['pelaaja_hp'], haku_tiedot['pelaaja_suojaus'], haku_tiedot['pelaaja_isku'],
+                      haku_tiedot['pelaaja_taitopiste'])
 
     return pelaaja
 
-#Lataa tallennuksen
+
+# Lataa tallennuksen
 def lataa_peli():
     sql = 'SELECT peli_id, pelaaja_nimi FROM peli '
     kursori = yhteys.cursor(dictionary=True)
@@ -137,7 +140,6 @@ def lataa_peli():
 
     for tallennus in tallennetut_pelit:
         print(f"{tallennus['peli_id']}. {tallennus['pelaaja_nimi']}")
-
 
     while True:
         valinta = input('Mitä tallennusta haluat jatkaa? Kirjoita numero:  ')
@@ -156,9 +158,11 @@ def lataa_peli():
 
     return valinta
 
-#Poistuu pelistä
+
+# Poistuu pelistä
 def poistu():
     return
+
 
 pelaaja = paavalikko()
 print(pelaaja.nimi, pelaaja.hp)
@@ -172,4 +176,3 @@ def taistelu_mahdollisuus_laskuri(matkan_paivat):
         return True
     elif heitto + matkan_paivat <= 12:
         return False
-    
