@@ -68,7 +68,7 @@ def taistelu(pelaaja, vihollinen):
         pelaajan_vuoro = True
         vihollisen_vuoro = True
 
-        while pelaajan_vuoro:
+        while pelaajan_vuoro == True:
             print(f"{pelaaja.nimi}                                      {vihollinen.nimi}\n"
                   f"HP: {pelaaja.hp}/{pelaaja.maxhp}                                    HP: {vihollinen.hp}/{vihollinen.maxhp}\n"
                   f"TP: {pelaaja.taitopiste}/{pelaaja.max_taitopiste}")
