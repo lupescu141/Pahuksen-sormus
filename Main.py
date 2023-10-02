@@ -4,6 +4,7 @@ import keyboard
 import random
 
 # Tietokannan asetukset:
+
 tietokanta = {'user': 'root',
               'password': 'h93cx3et',
               'host': '127.0.0.1',
@@ -12,6 +13,7 @@ tietokanta = {'user': 'root',
               'autocommit': True}
 
 # Tässä yritetään yhdistää tietokantaan ja palautetaan error viesti jos ei pysty
+
 try:
     yhteys = mysql.connector.connect(**tietokanta)
 
@@ -26,38 +28,56 @@ else:
     print("Connection: Succesful")
 
 
-# Listat
+# LISTAT:
 
 
-# Oliot
+# OLIOT:
 class Pelaaja:
-    def __init__(self, peli_id, pelaaja_nimi, pelaaja_sijainti, menneet_paivat, pelaaja_hp, pelaaja_suojaus,
-                 pelaaja_isku, pelaaja_taitopiste):
+    def __init__(self, peli_id, pelaaja_nimi, pelaaja_sijainti, menneet_paivat, pelaaja_hp, pelaaja_maxhp, pelaaja_suojaus,
+                 pelaaja_isku, pelaaja_taitopiste, pelaaja_max_taitopiste):
         self.id = peli_id
         self.nimi = pelaaja_nimi
         self.sijainti = pelaaja_sijainti
         self.menneet_paivat = menneet_paivat
         self.hp = pelaaja_hp
+        self.maxhp = pelaaja_maxhp
         self.suojaus = pelaaja_suojaus
         self.isku = pelaaja_isku
         self.taitopiste = pelaaja_taitopiste
+        self.max_taitopiste = pelaaja_max_taitopiste
 
     inventaario = []
 
 
 class Vihollinen:
-    def __init__(self, vihollinen_id, vihollinen_nimi, vihollinen_hp, vihollinen_suojaus, vihollinen_isku):
+    def __init__(self, vihollinen_id, vihollinen_nimi, vihollinen_hp, vihollinen_maxhp, vihollinen_suojaus, vihollinen_isku):
         self.id = vihollinen_id
         self.nimi = vihollinen_nimi
         self.hp = vihollinen_hp
+        self.maxhp = vihollinen_maxhp
         self.suojaus = vihollinen_suojaus
         self.isku = vihollinen_isku
 
 
 # FUNKTIOT:
 
+# Taistelua varten, ottaa pelaaja olion ja vihollis olion
+def taistelu(pelaaja, vihollinen):
+
+    while pelaaja.hp > 0 or vihollinen.hp > 0:
+        pelaajan_vuoro = True
+        vihollisen_vuoro = True
+
+        while pelaajan_vuoro:
+            print(f"{pelaaja.nimi}                                      {vihollinen.nimi}\n"
+                  f"HP: {pelaaja.hp}/{pelaaja.maxhp}                                    HP: {vihollinen.hp}/{vihollinen.maxhp}\n"
+                  f"TP: {pelaaja.taitopiste}/{pelaaja.max_taitopiste}")
+            input()
+
+
 # Päävalikon ohjaukseen
 def paavalikko():
+
     # Hakee txt tiedoston ja tulostaa päävalikon visuaalisen tekstin
     for x in open(file="paavalikkoTeksti.txt"):
         print(f"        {x}", end="")
@@ -80,8 +100,9 @@ def paavalikko():
     return pelaaja
 
 
-# Tämä luo uuden tallennuksen tietokantaan eli uuden pelin
+# Tämä luo uuden tallennuksen tietokantaan, eli uuden pelin
 def luo_peli():
+
     while True:
         nimi = input('Anna hahmollesi nimi: ')
 
@@ -109,30 +130,33 @@ def luo_peli():
 
 # Hakee viholliset tietokannasta ja palauttaa vihollinen olion
 def hae_random_vihollinen():
+
     sql = 'SELECT * FROM viholliset ORDER by RAND() LIMIT 1'
     kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
     haku_tiedot = kursori.fetchone()
     vihollinen = Vihollinen(haku_tiedot['vihollinen_id'], haku_tiedot['vihollinen_nimi'], haku_tiedot['vihollinen_hp'],
-                            haku_tiedot['vihollinen_suojaus'], haku_tiedot['vihollinen_isku'])
+                            haku_tiedot['vihollinen_maksimi_hp'], haku_tiedot['vihollinen_suojaus'],
+                            haku_tiedot['vihollinen_isku'])
     return vihollinen
 
 
 def luo_pelaaja(peli_id):
+
     sql = f'SELECT * FROM peli WHERE peli_id = "{peli_id}"'
     kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
     haku_tiedot = kursori.fetchone()
     pelaaja = Pelaaja(haku_tiedot['peli_id'], haku_tiedot['pelaaja_nimi'], haku_tiedot['pelaaja_sijainti'],
-                      haku_tiedot['menneet_paivat'],
-                      haku_tiedot['pelaaja_hp'], haku_tiedot['pelaaja_suojaus'], haku_tiedot['pelaaja_isku'],
-                      haku_tiedot['pelaaja_taitopiste'])
-
+                      haku_tiedot['menneet_paivat'], haku_tiedot['pelaaja_hp'], haku_tiedot['pelaaja_maksimi_hp'],
+                      haku_tiedot['pelaaja_suojaus'], haku_tiedot['pelaaja_isku'],
+                      haku_tiedot['pelaaja_taitopiste'], haku_tiedot['pelaaja_maksimi_taitopiste'])
     return pelaaja
 
 
 # Lataa tallennuksen
 def lataa_peli():
+
     sql = 'SELECT peli_id, pelaaja_nimi FROM peli '
     kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
@@ -164,15 +188,16 @@ def poistu():
     return
 
 
-pelaaja = paavalikko()
-print(pelaaja.nimi, pelaaja.hp)
-pelaaja.hp - 10
-print(pelaaja.hp)
-
-
 def taistelu_mahdollisuus_laskuri(matkan_paivat):
     heitto = random.randint(1, 20)
     if heitto + matkan_paivat > 12:
         return True
     elif heitto + matkan_paivat <= 12:
         return False
+
+
+'Main'
+pelaaja = paavalikko()
+taistelu(pelaaja, hae_random_vihollinen())
+
+
