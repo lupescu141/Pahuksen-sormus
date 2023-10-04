@@ -1,10 +1,10 @@
+import geopy
+from geopy import distance
 import mysql.connector
 from mysql.connector import errorcode
 import keyboard
 import random
 import sys
-import geopy
-from geopy import distance
 
 # Tietokannan asetukset:
 
@@ -51,6 +51,7 @@ class Pelaaja:
 
     inventaario = []
 
+
 class Vihollinen:
     def __init__(self, vihollinen_id, vihollinen_nimi, vihollinen_hp, vihollinen_maxhp, vihollinen_suojaus, vihollinen_isku):
         self.id = vihollinen_id
@@ -62,8 +63,8 @@ class Vihollinen:
 
 
 # FUNKTIOT:
-
 def hae_kaikki_kohteet():
+
     sql = 'SELECT airport.id, airport.fantasia_nimi, airport.latitude_deg, airport.longitude_deg FROM airport'
     kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
@@ -71,6 +72,7 @@ def hae_kaikki_kohteet():
     #for nimi in lista:
         #print(nimi)
     return lista
+
 
 def hae_random_vihollinen():
 
@@ -83,20 +85,27 @@ def hae_random_vihollinen():
                             haku_tiedot['vihollinen_isku'])
     return vihollinen
 
+
 def km_to_day(matka):
+
     if matka < 50:
         aika = 1
         return aika
+
     elif matka < 100:
         aika = 2
         return aika
+
     elif matka < 200:
         aika = 3
         return aika
+
     else:
         aika = 4
         return aika
 
+
+# Lisää uuden rivin peli tauluun eli luo uuden tallennuksen ja palauttaa tämän hetkisen tallennuksen id arvon.
 def luo_peli():
 
     while True:
@@ -113,16 +122,17 @@ def luo_peli():
 
     sql = 'INSERT INTO peli (pelaaja_nimi)'
     sql += f"VALUE ('{nimi}');"
-    kursori = yhteys.cursor()
+    kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
 
     sql = f'SELECT peli_id FROM peli WHERE pelaaja_nimi = "{nimi}";'
-    kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
     pelaajan_id_sanakirja = kursori.fetchone()
     pelaajan_id = pelaajan_id_sanakirja['peli_id']
     return pelaajan_id
 
+
+# Hakee id perusteella pelaajan hahmon tiedot, sitten luo ja palauttaa pelaaja olion.
 def luo_pelaaja(peli_id):
 
     sql = f'SELECT * FROM peli WHERE peli_id = "{peli_id}"'
@@ -135,6 +145,8 @@ def luo_pelaaja(peli_id):
                       haku_tiedot['pelaaja_taitopiste'], haku_tiedot['pelaaja_maksimi_taitopiste'])
     return pelaaja
 
+
+# Tulostaa käyttäjälle tallennukset ja palauttaa käyttäjän syötteen
 def lataa_peli():
 
     sql = 'SELECT peli_id, pelaaja_nimi FROM peli '
@@ -162,21 +174,28 @@ def lataa_peli():
 
     return valinta
 
+
 def matka_laskuri_v2():
+
     id_lista = []
+
     for kohde in hae_kaikki_kohteet():
         loppu_koordinaatit = kohde['latitude_deg'], kohde['longitude_deg']
         alku_koordinaatit = nykyinen_sijainti['latitude_deg'], nykyinen_sijainti['longitude_deg']
         matka = distance.distance(alku_koordinaatit, loppu_koordinaatit).km
+
         if matka < 50:
             print(f"{kohde['id']}. Kohteeseen {kohde['fantasia_nimi']} on {km_to_day(matka)} päivän matkustus.")
             id_lista.append(kohde['id'])
+
         elif matka < 100:
             print(f"{kohde['id']}. Kohteeseen {kohde['fantasia_nimi']} on {km_to_day(matka)} päivän matkustus.")
             id_lista.append(kohde['id'])
+
         elif matka < 200:
             print(f"{kohde['id']}. Kohteeseen {kohde['fantasia_nimi']} on {km_to_day(matka)} päivän matkustus.")
             id_lista.append(kohde['id'])
+
         else:
             print(f"{kohde['id']}. Kohteeseen {kohde['fantasia_nimi']} on {km_to_day(matka)} päivän matkustus.")
             id_lista.append(kohde['id'])
@@ -184,13 +203,14 @@ def matka_laskuri_v2():
     valinta = input('Mihin kohteeseen haluat matkustaa? Kirjoita numero: ')
     return valinta
 
+
 def paavalikko():
 
     # Hakee txt tiedoston ja tulostaa päävalikon visuaalisen tekstin
     for x in open(file="paavalikkoTeksti.txt"):
         print(f"        {x}", end="")
 
-    # Ottaa vastaan käyttäjän näppäinpainalluksen ja toteuttaa tietyn funktion
+    # Ottaa vastaan käyttäjän näppäinpainalluksen ja toteuttaa sen perusteella tietyn funktion
     while True:
 
         if keyboard.is_pressed("1"):
@@ -207,10 +227,16 @@ def paavalikko():
 
     return pelaaja
 
+
+# Sulkee ohjelman
 def poistu():
+
     sys.exit(0)
 
+
+# Palauttaa sijainnin tiedot airport taulusta pelaajan sijainnin perusteella
 def pelaajan_sijainti(peli_id):
+
     sql = f'''SELECT airport.id, airport.fantasia_nimi, airport.latitude_deg, airport.longitude_deg
             FROM peli, airport
             WHERE airport.id = peli.pelaaja_sijainti and peli_id = "{peli_id}"'''
@@ -220,7 +246,10 @@ def pelaajan_sijainti(peli_id):
     #print(tiedot)
     return tiedot
 
+
+# Arpoo sormuksen sijainnin peli tauluun
 def sormus_arpominen():
+
     sql = f'''SELECT airport.id FROM airport 
         WHERE airport.fantasia_nimi != 'Uudentoivon-Kylä' 
         AND airport.fantasia_nimi != 'Tulivuori'
@@ -230,37 +259,45 @@ def sormus_arpominen():
     kursori.execute(sql)
     sijainti_id = kursori.fetchone()
 
-
     sql = f'''UPDATE peli SET sormus_sijainti = {sijainti_id['id']}
         WHERE peli_id = {pelaaja.id}'''
-    kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
     print('Testaamisen vuoksi:')
     print('sormuksen random sijainti on ' + str(sijainti_id['id']))
     return sijainti_id['id']
 
+
+# Tulostaa taistelu valikon ja ohjaa taistelua
 def taistelu(pelaaja, vihollinen):
 
     while pelaaja.hp > 0 or vihollinen.hp > 0:
         pelaajan_vuoro = True
         vihollisen_vuoro = True
         välilyönti = ' '
+
         while pelaajan_vuoro == True:
             print(f"{pelaaja.nimi} {välilyönti*(40 - len(pelaaja.nimi))} {vihollinen.nimi}\n"
                   f"HP: {pelaaja.hp}/{pelaaja.maxhp} {välilyönti*30} HP: {vihollinen.hp}/{vihollinen.maxhp}\n"
                   f"TP: {pelaaja.taitopiste}/{pelaaja.max_taitopiste}")
             input()
 
+
+# Laskee taistelun mahdollisuuden
 def taistelu_mahdollisuus_laskuri(matkan_paivat):
+
     heitto = random.randint(1, 20)
+
     if heitto + matkan_paivat > 12:
         return True
+
     elif heitto + matkan_paivat <= 12:
         return False
 
 
+# Tallentaa pelaajan tiedot peli tauluun
 def tallennus():
-    sql = f'''UPDATE peli SET pelaaja_sijainti = {pelaaja.sijainti}, 
+
+    sql = f'''UPDATE peli SET pelaaja_sijainti = {pelaaja.sijainti},
     menneet_paivat = {pelaaja.menneet_paivat}, pelaaja_hp = {pelaaja.hp},
     pelaaja_taitopiste = {pelaaja.taitopiste} WHERE peli_id = {pelaaja.id}'''
     kursori = yhteys.cursor(dictionary=True)
@@ -269,29 +306,40 @@ def tallennus():
     return
 
 
+# Tulostaa taustatarinan jos käyttäjä syöttää halutun kirjaimen
 def taustatarina():
+
     yn = input('Haluatko lukea taustatarinan. Y/N: ')
+
     if yn.upper() == 'Y':
         print('kauan sitten diipadaapa')
+
     elif yn.upper() == 'N':
         return
 
-def voitto_mahdollisuus():
+
+# Tarkastaa onko pelaajan sijainnissa sormus ja paluttaa arvon True tai False
+def onko_kohteessa_sormus():
+
     if pelaaja.sijainti == sormus_sijainti:
         print('Löysit sormuksen!!')
         return True
+
     else:
         print('Kohteessa ei ole sormusta :(')
         return False
 
 
+# PÄÄOHJELMA:
 
-# PELIN LUOMINEN:
+# Pelin alustus
 pelaaja = paavalikko()
 sormus_sijainti = sormus_arpominen()
 nykyinen_sijainti = pelaajan_sijainti(pelaaja.id)
 
-# PÄÄOHJELMA
-voitto_mahdollisuus()
+# Peli käynnissä
+onko_kohteessa_sormus()
 matka_laskuri_v2()
 taistelu(pelaaja, hae_random_vihollinen())
+
+# Peli loppuu
