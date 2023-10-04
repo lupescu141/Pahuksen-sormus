@@ -33,13 +33,6 @@ else:
     print("Connection: Successful")
 
 
-# TIETOJEN HAKU:
-def pelin_tietojen_haku(peli_id):
-    sql = f'''SELECT * FROM peli WHERE peli_id = {peli_id}'''
-    kursori = yhteys.cursor(dictionary=True)
-    kursori.execute(sql)
-    pelin_tiedot = kursori.fetchone()
-    return pelin_tiedot
 
 # OLIOT:
 class Pelaaja:
