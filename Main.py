@@ -30,7 +30,7 @@ except mysql.connector.errors.Error as err:
         print(err)
 
 else:
-    print("Connection: Succesful")
+    print("Connection: Successful")
 
 
 # TIETOJEN HAKU:
@@ -71,7 +71,7 @@ class Vihollinen:
 
 # FUNKTIOT:
 
-# Taistelua varten, ottaa pelaaja olion ja vihollis olion
+# Taistelua varten, ottaa pelaajaolion ja vihollisolion
 def taistelu(pelaaja, vihollinen):
 
     while pelaaja.hp > 0 or vihollinen.hp > 0:
@@ -92,7 +92,7 @@ def paavalikko():
     for x in open(file="paavalikkoTeksti.txt"):
         print(f"        {x}", end="")
 
-    # Ottaa vastaan käyttäjän näppäin painalluksen ja toteuttaa tietyn funktion
+    # Ottaa vastaan käyttäjän näppäinpainalluksen ja toteuttaa tietyn funktion
     while True:
 
         if keyboard.is_pressed("1"):
