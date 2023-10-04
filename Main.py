@@ -4,6 +4,7 @@ import keyboard
 import random
 import sys
 import geopy
+from geopy import distance
 
 # Tietokannan asetukset:
 
