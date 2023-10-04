@@ -2,6 +2,7 @@ import mysql.connector
 from mysql.connector import errorcode
 import keyboard
 import random
+import sys
 
 # Tietokannan asetukset:
 
@@ -12,7 +13,7 @@ tietokanta = {'user': 'root',
               'raise_on_warnings': True,
               'autocommit': True}
 
-# Tässä yritetään yhdistää tietokantaan ja palautetaan error viesti jos ei pysty
+# Tässä yritetään yhdistää tietokantaan ja palautetaan error viesti jos syntyy virhe
 
 try:
     yhteys = mysql.connector.connect(**tietokanta)
@@ -78,7 +79,7 @@ def taistelu(pelaaja, vihollinen):
         vihollisen_vuoro = True
         välilyönti = ' '
         while pelaajan_vuoro == True:
-            print(f"{pelaaja.nimi} {välilyönti*(25 - len(pelaaja.nimi))} {vihollinen.nimi}\n"
+            print(f"{pelaaja.nimi} {välilyönti*(40 - len(pelaaja.nimi))} {vihollinen.nimi}\n")
                   f"HP: {pelaaja.hp}/{pelaaja.maxhp} {välilyönti*(20 + len(pelaaja.nimi))} HP: {vihollinen.hp}/{vihollinen.maxhp}\n"
                   f"TP: {pelaaja.taitopiste}/{pelaaja.max_taitopiste}")
             input()
@@ -164,6 +165,7 @@ def hae_random_vihollinen():
     return vihollinen
 
 
+# Luo ja palauttaa pelaaja olion
 def luo_pelaaja(peli_id):
 
     sql = f'SELECT * FROM peli WHERE peli_id = "{peli_id}"'
@@ -208,8 +210,7 @@ def lataa_peli():
 
 # Poistuu pelistä
 def poistu():
-    return
-
+    sys.exit(0)
 
 def taistelu_mahdollisuus_laskuri(matkan_paivat):
     heitto = random.randint(1, 20)
@@ -219,6 +220,6 @@ def taistelu_mahdollisuus_laskuri(matkan_paivat):
         return False
 
 
-'Main'
+# PÄÄOHJELMA:
 pelaaja = paavalikko()
 taistelu(pelaaja, hae_random_vihollinen())
