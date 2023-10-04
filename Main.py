@@ -199,7 +199,7 @@ def matka_laskuri_v2():
             print(f"{kohde['id']}. Kohteeseen {kohde['fantasia_nimi']} on {km_to_day(matka)} päivän matkustus.")
             id_lista.append(kohde['id'])
 
-    valinta = input('Mihin kohteeseen haluat matkustaa. kirjoita numero: ')
+    valinta = input('Mihin kohteeseen haluat matkustaa? Kirjoita numero: ')
     return valinta
 
 def paavalikko():
