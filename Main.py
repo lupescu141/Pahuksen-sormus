@@ -3,6 +3,7 @@ from mysql.connector import errorcode
 import keyboard
 import random
 import sys
+import geopy
 
 # Tietokannan asetukset:
 
@@ -65,45 +66,40 @@ class Vihollinen:
 # FUNKTIOT:
 
 # Taistelua varten, ottaa pelaajaolion ja vihollisolion
-def taistelu(pelaaja, vihollinen):
+def hae_kaikki_kohteet():
+    sql = 'SELECT airport.id, airport.fantasia_nimi, airport.latitude_deg, airport.longitude_deg FROM airport'
+    kursori = yhteys.cursor(dictionary=True)
+    kursori.execute(sql)
+    lista = kursori.fetchall()
+    #for nimi in lista:
+        #print(nimi)
+    return lista
 
-    while pelaaja.hp > 0 or vihollinen.hp > 0:
-        pelaajan_vuoro = True
-        vihollisen_vuoro = True
-        välilyönti = ' '
-        while pelaajan_vuoro == True:
-            print(f"{pelaaja.nimi} {välilyönti*(40 - len(pelaaja.nimi))} {vihollinen.nimi}\n")
-                  f"HP: {pelaaja.hp}/{pelaaja.maxhp} {välilyönti*(20 + len(pelaaja.nimi))} HP: {vihollinen.hp}/{vihollinen.maxhp}\n"
-                  f"TP: {pelaaja.taitopiste}/{pelaaja.max_taitopiste}")
-            input()
+def hae_random_vihollinen():
 
+    sql = 'SELECT * FROM viholliset ORDER by RAND() LIMIT 1'
+    kursori = yhteys.cursor(dictionary=True)
+    kursori.execute(sql)
+    haku_tiedot = kursori.fetchone()
+    vihollinen = Vihollinen(haku_tiedot['vihollinen_id'], haku_tiedot['vihollinen_nimi'], haku_tiedot['vihollinen_hp'],
+                            haku_tiedot['vihollinen_maksimi_hp'], haku_tiedot['vihollinen_suojaus'],
+                            haku_tiedot['vihollinen_isku'])
+    return vihollinen
 
-# Päävalikon ohjaukseen
-def paavalikko():
+def km_to_day(matka):
+    if matka < 50:
+        aika = 1
+        return aika
+    elif matka < 100:
+        aika = 2
+        return aika
+    elif matka < 200:
+        aika = 3
+        return aika
+    else:
+        aika = 4
+        return aika
 
-    # Hakee txt tiedoston ja tulostaa päävalikon visuaalisen tekstin
-    for x in open(file="paavalikkoTeksti.txt"):
-        print(f"        {x}", end="")
-
-    # Ottaa vastaan käyttäjän näppäinpainalluksen ja toteuttaa tietyn funktion
-    while True:
-
-        if keyboard.is_pressed("1"):
-            pelaaja = luo_pelaaja(luo_peli())
-            break
-
-        if keyboard.is_pressed("2"):
-            pelaaja = luo_pelaaja(lataa_peli())
-            break
-
-        if keyboard.is_pressed("3"):
-            poistu()
-            break
-
-    return pelaaja
-
-
-# Tämä luo uuden tallennuksen tietokantaan, eli uuden pelin
 def luo_peli():
 
     while True:
@@ -144,21 +140,6 @@ def luo_peli():
     kursori.execute(sql)
     return pelaajan_id
 
-
-# Hakee viholliset tietokannasta ja palauttaa vihollinen olion
-def hae_random_vihollinen():
-
-    sql = 'SELECT * FROM viholliset ORDER by RAND() LIMIT 1'
-    kursori = yhteys.cursor(dictionary=True)
-    kursori.execute(sql)
-    haku_tiedot = kursori.fetchone()
-    vihollinen = Vihollinen(haku_tiedot['vihollinen_id'], haku_tiedot['vihollinen_nimi'], haku_tiedot['vihollinen_hp'],
-                            haku_tiedot['vihollinen_maksimi_hp'], haku_tiedot['vihollinen_suojaus'],
-                            haku_tiedot['vihollinen_isku'])
-    return vihollinen
-
-
-# Luo ja palauttaa pelaaja olion
 def luo_pelaaja(peli_id):
 
     sql = f'SELECT * FROM peli WHERE peli_id = "{peli_id}"'
@@ -171,8 +152,6 @@ def luo_pelaaja(peli_id):
                       haku_tiedot['pelaaja_taitopiste'], haku_tiedot['pelaaja_maksimi_taitopiste'])
     return pelaaja
 
-
-# Lataa tallennuksen
 def lataa_peli():
 
     sql = 'SELECT peli_id, pelaaja_nimi FROM peli '
@@ -200,10 +179,75 @@ def lataa_peli():
 
     return valinta
 
+def matka_laskuri_v2():
+    id_lista = []
+    for kohde in hae_kaikki_kohteet():
+        loppu_koordinaatit = kohde['latitude_deg'], kohde['longitude_deg']
+        alku_koordinaatit = nykyinen_sijainti['latitude_deg'], nykyinen_sijainti['longitude_deg']
+        matka = distance.distance(alku_koordinaatit, loppu_koordinaatit).km
+        if matka < 50:
+            print(f"{kohde['id']}. Kohteeseen {kohde['fantasia_nimi']} on {km_to_day(matka)} päivän matkustus.")
+            id_lista.append(kohde['id'])
+        elif matka < 100:
+            print(f"{kohde['id']}. Kohteeseen {kohde['fantasia_nimi']} on {km_to_day(matka)} päivän matkustus.")
+            id_lista.append(kohde['id'])
+        elif matka < 200:
+            print(f"{kohde['id']}. Kohteeseen {kohde['fantasia_nimi']} on {km_to_day(matka)} päivän matkustus.")
+            id_lista.append(kohde['id'])
+        else:
+            print(f"{kohde['id']}. Kohteeseen {kohde['fantasia_nimi']} on {km_to_day(matka)} päivän matkustus.")
+            id_lista.append(kohde['id'])
 
-# Poistuu pelistä
+    valinta = input('Mihin kohteeseen haluat matkustaa. kirjoita numero: ')
+    return valinta
+
+def paavalikko():
+
+    # Hakee txt tiedoston ja tulostaa päävalikon visuaalisen tekstin
+    for x in open(file="paavalikkoTeksti.txt"):
+        print(f"        {x}", end="")
+
+    # Ottaa vastaan käyttäjän näppäinpainalluksen ja toteuttaa tietyn funktion
+    while True:
+
+        if keyboard.is_pressed("1"):
+            pelaaja = luo_pelaaja(luo_peli())
+            break
+
+        if keyboard.is_pressed("2"):
+            pelaaja = luo_pelaaja(lataa_peli())
+            break
+
+        if keyboard.is_pressed("3"):
+            poistu()
+            break
+
+    return pelaaja
+
 def poistu():
     sys.exit(0)
+
+def pelaajan_sijainti(peli_id):
+    sql = '''SELECT airport.id, airport.name, airport.latitude_deg, airport.longitude_deg
+            FROM peli, airport
+            WHERE airport.id = peli.pelaaja_sijainti and peli_id = {peli_id}'''
+    kursori = yhteys.cursor(dictionary=True)
+    kursori.execute(sql)
+    tiedot = kursori.fetchone()
+    #print(tiedot)
+    return tiedot
+
+def taistelu(pelaaja, vihollinen):
+
+    while pelaaja.hp > 0 or vihollinen.hp > 0:
+        pelaajan_vuoro = True
+        vihollisen_vuoro = True
+        välilyönti = ' '
+        while pelaajan_vuoro == True:
+            print(f"{pelaaja.nimi} {välilyönti*(40 - len(pelaaja.nimi))} {vihollinen.nimi}\n"
+                  f"HP: {pelaaja.hp}/{pelaaja.maxhp} {välilyönti*30} HP: {vihollinen.hp}/{vihollinen.maxhp}\n"
+                  f"TP: {pelaaja.taitopiste}/{pelaaja.max_taitopiste}")
+            input()
 
 def taistelu_mahdollisuus_laskuri(matkan_paivat):
     heitto = random.randint(1, 20)
@@ -215,4 +259,5 @@ def taistelu_mahdollisuus_laskuri(matkan_paivat):
 
 # PÄÄOHJELMA:
 pelaaja = paavalikko()
+nykyinen_sijainti =
 taistelu(pelaaja, hae_random_vihollinen())
