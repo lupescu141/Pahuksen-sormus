@@ -34,8 +34,6 @@ except mysql.connector.errors.Error as err:
 else:
     print("Connection: Successful")
 
-
-
 # OLIOT:
 class Pelaaja:
     def __init__(self, peli_id, pelaaja_nimi, pelaaja_sijainti, menneet_paivat, pelaaja_hp, pelaaja_maxhp, pelaaja_suojaus,
@@ -53,7 +51,6 @@ class Pelaaja:
 
     inventaario = []
 
-
 class Vihollinen:
     def __init__(self, vihollinen_id, vihollinen_nimi, vihollinen_hp, vihollinen_maxhp, vihollinen_suojaus, vihollinen_isku):
         self.id = vihollinen_id
@@ -66,7 +63,6 @@ class Vihollinen:
 
 # FUNKTIOT:
 
-# Taistelua varten, ottaa pelaajaolion ja vihollisolion
 def hae_kaikki_kohteet():
     sql = 'SELECT airport.id, airport.fantasia_nimi, airport.latitude_deg, airport.longitude_deg FROM airport'
     kursori = yhteys.cursor(dictionary=True)
@@ -125,20 +121,6 @@ def luo_peli():
     kursori.execute(sql)
     pelaajan_id_sanakirja = kursori.fetchone()
     pelaajan_id = pelaajan_id_sanakirja['peli_id']
-
-    sql = f'''SELECT airport.id FROM airport 
-    WHERE airport.fantasia_nimi != 'Uudentoivon-Kylä' 
-    AND airport.fantasia_nimi != 'Tulivuori'
-    ORDER BY RAND()
-    LIMIT 1;'''
-    kursori = yhteys.cursor(dictionary=True)
-    kursori.execute(sql)
-    sijainti_id = kursori.fetchone()
-
-    sql = f'''UPDATE peli SET sormus_sijainti = {sijainti_id['id']}
-    WHERE peli_id = 9'''
-    kursori = yhteys.cursor(dictionary=True)
-    kursori.execute(sql)
     return pelaajan_id
 
 def luo_pelaaja(peli_id):
@@ -229,14 +211,33 @@ def poistu():
     sys.exit(0)
 
 def pelaajan_sijainti(peli_id):
-    sql = '''SELECT airport.id, airport.name, airport.latitude_deg, airport.longitude_deg
+    sql = f'''SELECT airport.id, airport.fantasia_nimi, airport.latitude_deg, airport.longitude_deg
             FROM peli, airport
-            WHERE airport.id = peli.pelaaja_sijainti and peli_id = {peli_id}'''
+            WHERE airport.id = peli.pelaaja_sijainti and peli_id = "{peli_id}"'''
     kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
     tiedot = kursori.fetchone()
     #print(tiedot)
     return tiedot
+
+def sormus_arpominen():
+    sql = f'''SELECT airport.id FROM airport 
+        WHERE airport.fantasia_nimi != 'Uudentoivon-Kylä' 
+        AND airport.fantasia_nimi != 'Tulivuori'
+        ORDER BY RAND()
+        LIMIT 1;'''
+    kursori = yhteys.cursor(dictionary=True)
+    kursori.execute(sql)
+    sijainti_id = kursori.fetchone()
+
+
+    sql = f'''UPDATE peli SET sormus_sijainti = {sijainti_id['id']}
+        WHERE peli_id = {pelaaja.id}'''
+    kursori = yhteys.cursor(dictionary=True)
+    kursori.execute(sql)
+    print('Testaamisen vuoksi:')
+    print('sormuksen random sijainti on ' + str(sijainti_id['id']))
+    return sijainti_id['id']
 
 def taistelu(pelaaja, vihollinen):
 
@@ -258,7 +259,39 @@ def taistelu_mahdollisuus_laskuri(matkan_paivat):
         return False
 
 
-# PÄÄOHJELMA:
+def tallennus():
+    sql = f'''UPDATE peli SET pelaaja_sijainti = {pelaaja.sijainti}, 
+    menneet_paivat = {pelaaja.menneet_paivat}, pelaaja_hp = {pelaaja.hp},
+    pelaaja_taitopiste = {pelaaja.taitopiste} WHERE peli_id = {pelaaja.id}'''
+    kursori = yhteys.cursor(dictionary=True)
+    kursori.execute(sql)
+    print('Peli tallennettu')
+    return
+
+
+def taustatarina():
+    yn = input('Haluatko lukea taustatarinan. Y/N: ')
+    if yn.upper() == 'Y':
+        print('kauan sitten diipadaapa')
+    elif yn.upper() == 'N':
+        return
+
+def voitto_mahdollisuus():
+    if pelaaja.sijainti == sormus_sijainti:
+        print('Löysit sormuksen!!')
+        return True
+    else:
+        print('Kohteessa ei ole sormusta :(')
+        return False
+
+
+
+# PELIN LUOMINEN:
 pelaaja = paavalikko()
-nykyinen_sijainti =
+sormus_sijainti = sormus_arpominen()
+nykyinen_sijainti = pelaajan_sijainti(pelaaja.id)
+
+# PÄÄOHJELMA
+voitto_mahdollisuus()
+matka_laskuri_v2()
 taistelu(pelaaja, hae_random_vihollinen())
