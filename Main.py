@@ -18,18 +18,27 @@ try:
     yhteys = mysql.connector.connect(**tietokanta)
 
 except mysql.connector.errors.Error as err:
+
     if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
         print("Username or password is invalid")
+
     elif err.errno == errorcode.ER_BAD_DB_ERROR:
         print("Database does not exist")
+
     else:
         print(err)
+
 else:
     print("Connection: Succesful")
 
 
-# LISTAT:
-
+# TIETOJEN HAKU:
+def pelin_tietojen_haku(peli_id):
+    sql = f'''SELECT * FROM peli WHERE peli_id = {peli_id}'''
+    kursori = yhteys.cursor(dictionary=True)
+    kursori.execute(sql)
+    pelin_tiedot = kursori.fetchone()
+    return pelin_tiedot
 
 # OLIOT:
 class Pelaaja:
@@ -67,10 +76,10 @@ def taistelu(pelaaja, vihollinen):
     while pelaaja.hp > 0 or vihollinen.hp > 0:
         pelaajan_vuoro = True
         vihollisen_vuoro = True
-
+        välilyönti = ' '
         while pelaajan_vuoro == True:
-            print(f"{pelaaja.nimi}                                      {vihollinen.nimi}\n"
-                  f"HP: {pelaaja.hp}/{pelaaja.maxhp}                                    HP: {vihollinen.hp}/{vihollinen.maxhp}\n"
+            print(f"{pelaaja.nimi} {välilyönti*(25 - len(pelaaja.nimi))} {vihollinen.nimi}\n"
+                  f"HP: {pelaaja.hp}/{pelaaja.maxhp} {välilyönti*(20 + len(pelaaja.nimi))} HP: {vihollinen.hp}/{vihollinen.maxhp}\n"
                   f"TP: {pelaaja.taitopiste}/{pelaaja.max_taitopiste}")
             input()
 
@@ -125,6 +134,20 @@ def luo_peli():
     kursori.execute(sql)
     pelaajan_id_sanakirja = kursori.fetchone()
     pelaajan_id = pelaajan_id_sanakirja['peli_id']
+
+    sql = f'''SELECT airport.id FROM airport 
+    WHERE airport.fantasia_nimi != 'Uudentoivon-Kylä' 
+    AND airport.fantasia_nimi != 'Tulivuori'
+    ORDER BY RAND()
+    LIMIT 1;'''
+    kursori = yhteys.cursor(dictionary=True)
+    kursori.execute(sql)
+    sijainti_id = kursori.fetchone()
+
+    sql = f'''UPDATE peli SET sormus_sijainti = {sijainti_id['id']}
+    WHERE peli_id = 9'''
+    kursori = yhteys.cursor(dictionary=True)
+    kursori.execute(sql)
     return pelaajan_id
 
 
@@ -199,5 +222,3 @@ def taistelu_mahdollisuus_laskuri(matkan_paivat):
 'Main'
 pelaaja = paavalikko()
 taistelu(pelaaja, hae_random_vihollinen())
-
-
