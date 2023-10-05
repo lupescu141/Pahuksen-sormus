@@ -34,10 +34,11 @@ except mysql.connector.errors.Error as err:
 else:
     print("Connection: Successful")
 
+
 # OLIOT:
 class Pelaaja:
     def __init__(self, peli_id, pelaaja_nimi, pelaaja_sijainti, menneet_paivat, pelaaja_hp, pelaaja_maxhp, pelaaja_suojaus,
-                 pelaaja_isku, pelaaja_taitopiste, pelaaja_max_taitopiste):
+                 pelaaja_isku, pelaaja_taitopiste, pelaaja_max_taitopiste, onko_sormus):
         self.id = peli_id
         self.nimi = pelaaja_nimi
         self.sijainti = pelaaja_sijainti
@@ -48,8 +49,7 @@ class Pelaaja:
         self.isku = pelaaja_isku
         self.taitopiste = pelaaja_taitopiste
         self.max_taitopiste = pelaaja_max_taitopiste
-
-    inventaario = []
+        self.onko_sormus = onko_sormus
 
 
 class Vihollinen:
@@ -175,9 +175,10 @@ def lataa_peli():
     return valinta
 
 
-def matka_laskuri_v2():
+def sijainti_valitsin(pelaaja):
 
     id_lista = []
+    oikea_kohde = 0
 
     for kohde in hae_kaikki_kohteet():
         loppu_koordinaatit = kohde['latitude_deg'], kohde['longitude_deg']
@@ -187,20 +188,32 @@ def matka_laskuri_v2():
         if matka < 50:
             print(f"{kohde['id']}. Kohteeseen {kohde['fantasia_nimi']} on {km_to_day(matka)} päivän matkustus.")
             id_lista.append(kohde['id'])
-
         elif matka < 100:
             print(f"{kohde['id']}. Kohteeseen {kohde['fantasia_nimi']} on {km_to_day(matka)} päivän matkustus.")
             id_lista.append(kohde['id'])
-
         elif matka < 200:
             print(f"{kohde['id']}. Kohteeseen {kohde['fantasia_nimi']} on {km_to_day(matka)} päivän matkustus.")
             id_lista.append(kohde['id'])
-
-        else:
-            print(f"{kohde['id']}. Kohteeseen {kohde['fantasia_nimi']} on {km_to_day(matka)} päivän matkustus.")
+        elif matka > 200:
+            print(f"{kohde['id']:2}. Kohteeseen {kohde['fantasia_nimi']:28} {km_to_day(matka)} päivän matkustus.")
             id_lista.append(kohde['id'])
 
-    valinta = input('Mihin kohteeseen haluat matkustaa? Kirjoita numero: ')
+    while True:
+
+        valinta = input('Mihin kohteeseen haluat matkustaa? Kirjoita numero: ')
+
+        for id in id_lista:
+
+            if str(id) == valinta:
+                print(f'{valinta} valittu!')
+                oikea_kohde = 1
+
+        if oikea_kohde == 1:
+            break
+
+        else:
+            print('Virheellinen kohde.')
+
     return valinta
 
 
@@ -238,8 +251,8 @@ def poistu():
 def pelaajan_sijainti(peli_id):
 
     sql = f'''SELECT airport.id, airport.fantasia_nimi, airport.latitude_deg, airport.longitude_deg
-            FROM peli, airport
-            WHERE airport.id = peli.pelaaja_sijainti and peli_id = "{peli_id}"'''
+              FROM peli, airport
+              WHERE airport.id = peli.pelaaja_sijainti and peli_id = "{peli_id}"'''
     kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
     tiedot = kursori.fetchone()
@@ -251,10 +264,10 @@ def pelaajan_sijainti(peli_id):
 def sormus_arpominen():
 
     sql = f'''SELECT airport.id FROM airport 
-        WHERE airport.fantasia_nimi != 'Uudentoivon-Kylä' 
-        AND airport.fantasia_nimi != 'Tulivuori'
-        ORDER BY RAND()
-        LIMIT 1;'''
+              WHERE airport.fantasia_nimi != 'Uudentoivon-Kylä' 
+              AND airport.fantasia_nimi != 'Tulivuori'
+              ORDER BY RAND()
+              LIMIT 1;'''
     kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
     sijainti_id = kursori.fetchone()
@@ -298,8 +311,8 @@ def taistelu_mahdollisuus_laskuri(matkan_paivat):
 def tallennus():
 
     sql = f'''UPDATE peli SET pelaaja_sijainti = {pelaaja.sijainti},
-    menneet_paivat = {pelaaja.menneet_paivat}, pelaaja_hp = {pelaaja.hp},
-    pelaaja_taitopiste = {pelaaja.taitopiste} WHERE peli_id = {pelaaja.id}'''
+              menneet_paivat = {pelaaja.menneet_paivat}, pelaaja_hp = {pelaaja.hp},
+              pelaaja_taitopiste = {pelaaja.taitopiste} WHERE peli_id = {pelaaja.id}'''
     kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
     print('Peli tallennettu')
@@ -338,8 +351,22 @@ sormus_sijainti = sormus_arpominen()
 nykyinen_sijainti = pelaajan_sijainti(pelaaja.id)
 
 # Peli käynnissä
-onko_kohteessa_sormus()
-matka_laskuri_v2()
-taistelu(pelaaja, hae_random_vihollinen())
+taustatarina()
+while True:
+# pelaaja valitsee minne haluaa matkustaa
+
+    valinta = sijainti_valitsin(pelaaja)
+
+# arvotaan taistelu etäisyyden perusteella
+
+    if taistelu_mahdollisuus_laskuri(paivien_lisaaja(valinta, pelaaja)):
+        taistelu(pelaaja, hae_random_vihollinen())
+
+    paivien_lisaaja(valinta, pelaaja)
+
+# tallennus taistelun jälkeen
+
+    #tallennus(pelaaja) ei tallennusta testi vaiheessa
+    nykyinen_sijainti = pelaajan_sijainti(pelaaja.id)
 
 # Peli loppuu
