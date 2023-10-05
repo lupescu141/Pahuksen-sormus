@@ -63,9 +63,10 @@ class Vihollinen:
 
 
 # FUNKTIOT:
-def hae_kaikki_kohteet():
+def hae_kaikki_kohteet(pelaaja):
 
-    sql = 'SELECT airport.id, airport.fantasia_nimi, airport.latitude_deg, airport.longitude_deg FROM airport'
+    sql = f'''SELECT airport.id, airport.fantasia_nimi, airport.latitude_deg, airport.longitude_deg 
+              FROM airport WHERE airport.id != {pelaaja.sijainti}'''
     kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
     lista = kursori.fetchall()
@@ -142,7 +143,7 @@ def luo_pelaaja(peli_id):
     pelaaja = Pelaaja(haku_tiedot['peli_id'], haku_tiedot['pelaaja_nimi'], haku_tiedot['pelaaja_sijainti'],
                       haku_tiedot['menneet_paivat'], haku_tiedot['pelaaja_hp'], haku_tiedot['pelaaja_maksimi_hp'],
                       haku_tiedot['pelaaja_suojaus'], haku_tiedot['pelaaja_isku'],
-                      haku_tiedot['pelaaja_taitopiste'], haku_tiedot['pelaaja_maksimi_taitopiste'])
+                      haku_tiedot['pelaaja_taitopiste'], haku_tiedot['pelaaja_maksimi_taitopiste'], haku_tiedot['onko_sormus'])
     return pelaaja
 
 
@@ -180,23 +181,25 @@ def sijainti_valitsin(pelaaja):
     id_lista = []
     oikea_kohde = 0
 
-    for kohde in hae_kaikki_kohteet():
+    for kohde in hae_kaikki_kohteet(pelaaja):
         loppu_koordinaatit = kohde['latitude_deg'], kohde['longitude_deg']
         alku_koordinaatit = nykyinen_sijainti['latitude_deg'], nykyinen_sijainti['longitude_deg']
         matka = distance.distance(alku_koordinaatit, loppu_koordinaatit).km
 
         if matka < 50:
-            print(f"{kohde['id']}. Kohteeseen {kohde['fantasia_nimi']} on {km_to_day(matka)} päivän matkustus.")
+            print(f"{kohde['id']:2}. Kohteeseen {kohde['fantasia_nimi']:28} {km_to_day(matka)} päivän matkustus.")
             id_lista.append(kohde['id'])
         elif matka < 100:
-            print(f"{kohde['id']}. Kohteeseen {kohde['fantasia_nimi']} on {km_to_day(matka)} päivän matkustus.")
+            print(f"{kohde['id']:2}. Kohteeseen {kohde['fantasia_nimi']:28} {km_to_day(matka)} päivän matkustus.")
             id_lista.append(kohde['id'])
         elif matka < 200:
-            print(f"{kohde['id']}. Kohteeseen {kohde['fantasia_nimi']} on {km_to_day(matka)} päivän matkustus.")
+            print(f"{kohde['id']:2}. Kohteeseen {kohde['fantasia_nimi']:28} {km_to_day(matka)} päivän matkustus.")
             id_lista.append(kohde['id'])
         elif matka > 200:
             print(f"{kohde['id']:2}. Kohteeseen {kohde['fantasia_nimi']:28} {km_to_day(matka)} päivän matkustus.")
             id_lista.append(kohde['id'])
+
+    print(f'Olet kohteessa {nykyinen_sijainti["fantasia_nimi"]}')
 
     while True:
 
@@ -240,6 +243,24 @@ def paavalikko():
 
     return pelaaja
 
+def paivien_lisaaja(haluttu_kohde_id, pelaaja):
+
+    sql = f'''SELECT airport.id, airport.fantasia_nimi, airport.latitude_deg, airport.longitude_deg 
+              FROM airport WHERE airport.id = {haluttu_kohde_id}'''
+    kursori = yhteys.cursor(dictionary=True)
+    kursori.execute(sql)
+    kohde = kursori.fetchone()
+    loppu_koordinaatit = kohde['latitude_deg'], kohde['longitude_deg']
+    alku_koordinaatit = nykyinen_sijainti['latitude_deg'], nykyinen_sijainti['longitude_deg']
+    matka = distance.distance(alku_koordinaatit, loppu_koordinaatit).km
+    pelaaja.menneet_paivat = int(pelaaja.menneet_paivat) + int(km_to_day(matka))
+    pelaaja.sijainti = int(kohde["id"])
+
+    #testauksen vuoksi tulostus
+    print(f'Pelaajaolion sijainti on {pelaaja.sijainti}')
+    print(f'Pelaajaolion käytetyt päivät ovat {pelaaja.menneet_paivat}')
+
+    return km_to_day(matka)
 
 # Sulkee ohjelman
 def poistu():
@@ -273,10 +294,10 @@ def sormus_arpominen():
     sijainti_id = kursori.fetchone()
 
     sql = f'''UPDATE peli SET sormus_sijainti = {sijainti_id['id']}
-        WHERE peli_id = {pelaaja.id}'''
+              WHERE peli_id = "{pelaaja.id}"'''
     kursori.execute(sql)
-    print('Testaamisen vuoksi:')
-    print('sormuksen random sijainti on ' + str(sijainti_id['id']))
+    #print('Testaamisen vuoksi:')
+    #print('sormuksen random sijainti on ' + str(sijainti_id['id']))
     return sijainti_id['id']
 
 
@@ -307,14 +328,18 @@ def taistelu_mahdollisuus_laskuri(matkan_paivat):
     heitto = random.randint(1, 20)
 
     if heitto + matkan_paivat > 12:
+        print('Matkustit liian varomattomasti. Jouduit taisteluun!')
+        input('\033[31mPaina Enter jatkaaksesi...\033[0m')
         return True
 
     elif heitto + matkan_paivat <= 12:
+        print('Saavuit kohteeseen ilman taistelua')
+        input('\033[31mPaina Enter jatkaaksesi...\033[0m')
         return False
 
 
 # Tallentaa pelaajan tiedot peli tauluun
-def tallennus():
+def tallennus(pelaaja):
 
     sql = f'''UPDATE peli SET pelaaja_sijainti = {pelaaja.sijainti},
               menneet_paivat = {pelaaja.menneet_paivat}, pelaaja_hp = {pelaaja.hp},
@@ -328,13 +353,20 @@ def tallennus():
 # Tulostaa taustatarinan jos käyttäjä syöttää halutun kirjaimen
 def taustatarina():
 
-    yn = input('Haluatko lukea taustatarinan. Y/N: ')
+    yn = input('Haluatko lukea taustatarinan ja ohjeet? Y/N: ')
 
     if yn.upper() == 'Y':
         print('kauan sitten diipadaapa')
+        print(f'Seikkailusi alkaa kohteesta {nykyinen_sijainti["fantasia_nimi"]}')
+        print('Tehtäväsi on löytää pahuksen sormus ja viedä se tulivuoreen')
+        print('Voit matkustaa kohteisiin valitsemalla niitä edeltävän numeron')
+        print('Yritä löytää sormus mahdollisimman nopeasti ja viedä se tulivuoreen,',
+              'mutta pidemmälle matkustaessa riskit kasvavat')
 
     elif yn.upper() == 'N':
-        return
+        print(f'Seikkailusi alkaa kohteesta {nykyinen_sijainti["fantasia_nimi"]}')
+
+    input('\033[31mPaina Enter jatkaaksesi...\033[0m')
 
 
 # Tarkastaa onko pelaajan sijainnissa sormus ja paluttaa arvon True tai False
@@ -342,10 +374,12 @@ def onko_kohteessa_sormus():
 
     if pelaaja.sijainti == sormus_sijainti:
         print('Löysit sormuksen!!')
+        input('\033[31mPaina Enter jatkaaksesi...\033[0m')
         return True
 
     else:
         print('Kohteessa ei ole sormusta :(')
+        input('\033[31mPaina Enter jatkaaksesi...\033[0m')
         return False
 
 
@@ -355,6 +389,7 @@ def onko_kohteessa_sormus():
 pelaaja = paavalikko()
 sormus_sijainti = sormus_arpominen()
 nykyinen_sijainti = pelaajan_sijainti(pelaaja.id)
+
 
 # Peli käynnissä
 taustatarina()
