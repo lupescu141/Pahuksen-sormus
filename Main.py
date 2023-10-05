@@ -286,13 +286,19 @@ def taistelu(pelaaja, vihollinen):
     while pelaaja.hp > 0 or vihollinen.hp > 0:
         pelaajan_vuoro = True
         vihollisen_vuoro = True
-        välilyönti = ' '
-
-        while pelaajan_vuoro == True:
-            print(f"{pelaaja.nimi} {välilyönti*(40 - len(pelaaja.nimi))} {vihollinen.nimi}\n"
-                  f"HP: {pelaaja.hp}/{pelaaja.maxhp} {välilyönti*30} HP: {vihollinen.hp}/{vihollinen.maxhp}\n"
-                  f"TP: {pelaaja.taitopiste}/{pelaaja.max_taitopiste}")
-            input()
+        pelaaja_hp = 'HP: ' + str(pelaaja.hp) + '/' + str(pelaaja.maxhp)
+        pelaaja_tp = 'TP: ' + str(pelaaja.taitopiste) + '/' + str(pelaaja.max_taitopiste)
+        vihollinen_hp = 'HP: ' + str(vihollinen.hp) + '/' + str(vihollinen.maxhp)
+        print(f"  {'_'*49}\n"
+              f" |{'TAISTELE!':^49}|\n",
+              f"|{'_'*49}|\n",
+              f"|{pelaaja.nimi:^15}|{'1. Hyökkää':^17}|{vihollinen.nimi:^15}|\n",
+              f"|{pelaaja_hp:^15}|{'2. Taidot ':^17}|{vihollinen_hp:^15}|\n",
+              f"|{pelaaja_tp:^15}|{'3. Esineet':^17}|{'':15}|\n"
+              f" |{'':15}|{'':17}|{'':15}|\n"
+              f" |{'_'*15}|{'_'*17}|{'_'*15}|")
+        print()
+        input()
 
 
 # Laskee taistelun mahdollisuuden
