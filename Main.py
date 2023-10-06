@@ -1,10 +1,14 @@
+from colorama import Fore
+from colorama import Style
 import geopy
 from geopy import distance
 import mysql.connector
 from mysql.connector import errorcode
 import keyboard
 import random
+import winsound
 import sys
+import time
 
 # Tietokannan asetukset:
 
@@ -310,15 +314,33 @@ def taistelu(pelaaja, vihollinen):
         pelaaja_hp = 'HP: ' + str(pelaaja.hp) + '/' + str(pelaaja.maxhp)
         pelaaja_tp = 'TP: ' + str(pelaaja.taitopiste) + '/' + str(pelaaja.max_taitopiste)
         vihollinen_hp = 'HP: ' + str(vihollinen.hp) + '/' + str(vihollinen.maxhp)
-        print(f"  {'_'*49}\n"
-              f" |{'TAISTELE!':^49}|\n",
-              f"|{'_'*49}|\n",
-              f"|{pelaaja.nimi:^15}|{'1. Hyökkää':^17}|{vihollinen.nimi:^15}|\n",
-              f"|{pelaaja_hp:^15}|{'2. Taidot ':^17}|{vihollinen_hp:^15}|\n",
-              f"|{pelaaja_tp:^15}|{'3. Esineet':^17}|{'':15}|\n"
-              f" |{'':15}|{'':17}|{'':15}|\n"
-              f" |{'_'*15}|{'_'*17}|{'_'*15}|")
-        print()
+        # Tulostaa pää-taistelu valikon
+        print(f"  {'_'*100}\n"
+              f" |{Fore.LIGHTYELLOW_EX}{'TAISTELE!':^49}{Style.RESET_ALL}|{Fore.LIGHTYELLOW_EX}{'TAISTELU LOKI':^50}{Style.RESET_ALL}|\n",
+              f"|{'_'*49}|{'_'*50}|\n",
+              f"|{Fore.LIGHTGREEN_EX}{pelaaja.nimi:^15}{Style.RESET_ALL}|{Fore.LIGHTCYAN_EX}{'(1) Hyökkää':^17}{Style.RESET_ALL}|{Fore.LIGHTGREEN_EX}{vihollinen.nimi:^15}{Style.RESET_ALL}|{'':50}|\n",
+              f"|{Fore.LIGHTRED_EX}{pelaaja_hp:^15}{Style.RESET_ALL}|{Fore.LIGHTCYAN_EX}{'(2) Taidot ':^17}{Style.RESET_ALL}|{Fore.LIGHTRED_EX}{vihollinen_hp:^15}{Style.RESET_ALL}|{'':50}|\n",
+              f"|{Fore.LIGHTMAGENTA_EX}{pelaaja_tp:^15}{Style.RESET_ALL}|{Fore.LIGHTCYAN_EX}{'(3) Esineet':^17}{Style.RESET_ALL}|{'':15}|{'':50}|\n"
+              f" |{'':15}|{'':17}|{'':15}|{'':50}|\n"
+              f" |{'_'*15}|{'_'*17}|{'_'*15}|{'_'*50}|\n")
+        # Tulostaa taidot valikon
+        print(f"  {'_'*100}\n"
+              f" |{Fore.LIGHTYELLOW_EX}{'TAIDOT!':^49}{Style.RESET_ALL}|{Fore.LIGHTYELLOW_EX}{'TAISTELU LOKI':^50}{Style.RESET_ALL}|\n",
+              f"|{'_'*49}|{'_'*50}|\n",
+              f"|{Fore.LIGHTGREEN_EX}{pelaaja.nimi:^15}{Style.RESET_ALL}|{Fore.LIGHTCYAN_EX}{'(1) taito':^17}{Style.RESET_ALL}|{Fore.LIGHTGREEN_EX}{vihollinen.nimi:^15}{Style.RESET_ALL}|{'':50}|\n",
+              f"|{Fore.LIGHTRED_EX}{pelaaja_hp:^15}{Style.RESET_ALL}|{Fore.LIGHTCYAN_EX}{'(2) taito':^17}{Style.RESET_ALL}|{Fore.LIGHTRED_EX}{vihollinen_hp:^15}{Style.RESET_ALL}|{'':50}|\n",
+              f"|{Fore.LIGHTMAGENTA_EX}{pelaaja_tp:^15}{Style.RESET_ALL}|{Fore.LIGHTCYAN_EX}{'(3) taito':^17}{Style.RESET_ALL}|{'':15}|{'':50}|\n"
+              f" |{'':15}|{Fore.LIGHTYELLOW_EX}{'(4) Takaisin':^17}{Style.RESET_ALL}|{'':15}|{'':50}|\n"
+              f" |{'_' * 15}|{'_' * 17}|{'_' * 15}|{'_'*50}|\n")
+        # Tulostaa esine valikon
+        print(f"  {'_'*100}\n"
+              f" |{Fore.LIGHTYELLOW_EX}{'ESINEET!':^49}{Style.RESET_ALL}|{Fore.LIGHTYELLOW_EX}{'TAISTELU LOKI':^50}{Style.RESET_ALL}|\n",
+              f"|{'_'*49}|{'_'*50}|\n",
+              f"|{Fore.LIGHTGREEN_EX}{pelaaja.nimi:^15}{Style.RESET_ALL}|{Fore.LIGHTCYAN_EX}{'(1) Esine':^17}{Style.RESET_ALL}|{Fore.GREEN}{vihollinen.nimi:^15}{Style.RESET_ALL}|{'':50}|\n",
+              f"|{Fore.LIGHTRED_EX}{pelaaja_hp:^15}{Style.RESET_ALL}|{Fore.LIGHTCYAN_EX}{'(2) Esine':^17}{Style.RESET_ALL}|{Fore.RED}{vihollinen_hp:^15}{Style.RESET_ALL}|{'':50}|\n",
+              f"|{Fore.LIGHTMAGENTA_EX}{pelaaja_tp:^15}{Style.RESET_ALL}|{Fore.LIGHTCYAN_EX}{'(3) Esine':^17}{Style.RESET_ALL}|{'':15}|{'':50}|\n"
+              f" |{'':15}|{Fore.LIGHTYELLOW_EX}{'(4) Takaisin':^17}{Style.RESET_ALL}|{'':15}|{'':50}|\n"
+              f" |{'_' * 15}|{'_' * 17}|{'_' * 15}|{'_'*50}|\n")
         input()
 
 
@@ -386,6 +408,7 @@ def onko_kohteessa_sormus():
 # PÄÄOHJELMA:
 
 # Pelin alustus
+winsound.PlaySound('adventure.wav',  winsound.SND_ASYNC | winsound.SND_FILENAME)
 pelaaja = paavalikko()
 sormus_sijainti = sormus_arpominen()
 nykyinen_sijainti = pelaajan_sijainti(pelaaja.id)
