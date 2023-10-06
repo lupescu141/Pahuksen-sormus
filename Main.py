@@ -408,7 +408,7 @@ def onko_kohteessa_sormus():
 # PÄÄOHJELMA:
 
 # Pelin alustus
-winsound.PlaySound('adventure.wav',  winsound.SND_ASYNC | winsound.SND_FILENAME)
+winsound.PlaySound('adventure.wav', winsound.SND_LOOP | winsound.SND_ASYNC | winsound.SND_FILENAME)
 pelaaja = paavalikko()
 sormus_sijainti = sormus_arpominen()
 nykyinen_sijainti = pelaajan_sijainti(pelaaja.id)
