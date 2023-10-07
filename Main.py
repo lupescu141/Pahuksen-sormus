@@ -121,7 +121,7 @@ def km_to_day(matka):
         return aika
 
 
-# Lisää uuden rivin peli tauluun eli luo uuden tallennuksen ja palauttaa tämän hetkisen tallennuksen id arvon.
+# Lisää uuden rivin peli-tauluun eli luo uuden tallennuksen ja palauttaa tämän hetkisen tallennuksen id-arvon.
 def luo_peli():
 
     while True:
@@ -297,8 +297,8 @@ def pelaajan_sijainti(peli_id):
     return tiedot
 
 
-# Arpoo sormuksen sijainnin peli tauluun
-def sormus_arpominen():
+# Arpoo sormuksen sijainnin peli-tauluun
+def sormus_arpominen(pelaaja):
 
     sql = f'''SELECT airport.id FROM airport 
               WHERE airport.fantasia_nimi != 'Uudentoivon-Kylä' 
@@ -317,7 +317,7 @@ def sormus_arpominen():
     return sijainti_id['id']
 
 
-# Tulostaa taistelu valikon ja ohjaa taistelua
+# Tulostaa taisteluvalikon ja ohjaa taistelua
 def taistelu(pelaaja, vihollinen):
     loki_txt1 = ''
     loki_txt2 = ''
@@ -433,7 +433,7 @@ def taistelu_mahdollisuus_laskuri(matkan_paivat):
         return False
 
 
-# Tallentaa pelaajan tiedot peli tauluun
+# Tallentaa pelaajan tiedot peli-tauluun
 def tallennus(pelaaja):
 
     sql = f'''UPDATE peli SET pelaaja_sijainti = {pelaaja.sijainti},
@@ -445,7 +445,16 @@ def tallennus(pelaaja):
     return
 
 
-# Tulostaa taustatarinan jos käyttäjä syöttää halutun kirjaimen
+def taitopisteen_kaytto(pelaaja):
+
+    if pelaaja.taitopiste > 0:
+        pelaaja.taitopiste -= 1
+
+    else:
+        print("Ei taitopisteitä jäljellä")
+
+
+# Tulostaa taustatarinan, jos käyttäjä syöttää halutun kirjaimen
 def taustatarina():
 
     yn = input('Haluatko lukea taustatarinan ja ohjeet? Y/N: ')
@@ -465,6 +474,18 @@ def taustatarina():
         print('')
         input(f'{punainen}Paina Enter jatkaaksesi...{vari_reset}')
 
+
+
+# Arpoo tuleeko event ja hakee sen randomilla taulusta
+def tuleeko_event():
+
+    if random.choice([True, False]) == True:
+        sql = 'SELECT event.id FROM event ORDER BY RAND() LIMIT 1;'
+        kursori = yhteys.cursor
+        kursori.execute(sql)
+        event = kursori.fetchone()
+
+        return event
 
 
 # Tarkastaa onko pelaajan sijainnissa sormus ja paluttaa arvon True tai False
