@@ -1,3 +1,4 @@
+import colorama
 from colorama import Fore
 from colorama import Style
 import geopy
@@ -10,7 +11,16 @@ import winsound
 import sys
 import time
 
-# Tietokannan asetukset:
+# TEKSTIVÄRIT:
+punainen = colorama.Fore.LIGHTRED_EX
+keltainen = colorama.Fore.LIGHTYELLOW_EX
+syaani = colorama.Fore.LIGHTCYAN_EX
+magenta = colorama.Fore.LIGHTMAGENTA_EX
+vihrea = colorama.Fore.LIGHTGREEN_EX
+sininen = colorama.Fore.LIGHTBLUE_EX
+vari_reset = Style.RESET_ALL
+
+# TIETOKANNAN ASETUKSET:
 
 tietokanta = {'user': 'root',
               'password': 'h93cx3et',
@@ -41,8 +51,8 @@ else:
 
 # OLIOT:
 class Pelaaja:
-    def __init__(self, peli_id, pelaaja_nimi, pelaaja_sijainti, menneet_paivat, pelaaja_hp, pelaaja_maxhp, pelaaja_suojaus,
-                 pelaaja_isku, pelaaja_taitopiste, pelaaja_max_taitopiste, onko_sormus):
+    def __init__(self, peli_id, pelaaja_nimi, pelaaja_sijainti, menneet_paivat, pelaaja_hp, pelaaja_maxhp,
+                 pelaaja_suojaus, pelaaja_isku, pelaaja_taitopiste, pelaaja_max_taitopiste, onko_sormus, sormus_sijainti):
         self.id = peli_id
         self.nimi = pelaaja_nimi
         self.sijainti = pelaaja_sijainti
@@ -54,6 +64,7 @@ class Pelaaja:
         self.taitopiste = pelaaja_taitopiste
         self.max_taitopiste = pelaaja_max_taitopiste
         self.onko_sormus = onko_sormus
+        self.sormus_sijainti = sormus_sijainti
 
 
 class Vihollinen:
@@ -307,41 +318,102 @@ def sormus_arpominen():
 
 # Tulostaa taistelu valikon ja ohjaa taistelua
 def taistelu(pelaaja, vihollinen):
+    loki_txt1 = ''
+    loki_txt2 = ''
+    loki_txt3 = ''
 
-    while pelaaja.hp > 0 or vihollinen.hp > 0:
-        pelaajan_vuoro = True
-        vihollisen_vuoro = True
+    while True:
         pelaaja_hp = 'HP: ' + str(pelaaja.hp) + '/' + str(pelaaja.maxhp)
         pelaaja_tp = 'TP: ' + str(pelaaja.taitopiste) + '/' + str(pelaaja.max_taitopiste)
         vihollinen_hp = 'HP: ' + str(vihollinen.hp) + '/' + str(vihollinen.maxhp)
-        # Tulostaa pää-taistelu valikon
+
+        # Tulostaa pää-taisteluvalikon
         print(f"  {'_'*100}\n"
-              f" |{Fore.LIGHTYELLOW_EX}{'TAISTELE!':^49}{Style.RESET_ALL}|{Fore.LIGHTYELLOW_EX}{'TAISTELU LOKI':^50}{Style.RESET_ALL}|\n",
+              f" |{keltainen}{'TAISTELE!':^49}{vari_reset}|{keltainen}{'TAISTELU LOKI':^50}{vari_reset}|\n",
               f"|{'_'*49}|{'_'*50}|\n",
-              f"|{Fore.LIGHTGREEN_EX}{pelaaja.nimi:^15}{Style.RESET_ALL}|{Fore.LIGHTCYAN_EX}{'(1) Hyökkää':^17}{Style.RESET_ALL}|{Fore.LIGHTGREEN_EX}{vihollinen.nimi:^15}{Style.RESET_ALL}|{'':50}|\n",
-              f"|{Fore.LIGHTRED_EX}{pelaaja_hp:^15}{Style.RESET_ALL}|{Fore.LIGHTCYAN_EX}{'(2) Taidot ':^17}{Style.RESET_ALL}|{Fore.LIGHTRED_EX}{vihollinen_hp:^15}{Style.RESET_ALL}|{'':50}|\n",
-              f"|{Fore.LIGHTMAGENTA_EX}{pelaaja_tp:^15}{Style.RESET_ALL}|{Fore.LIGHTCYAN_EX}{'(3) Esineet':^17}{Style.RESET_ALL}|{'':15}|{'':50}|\n"
+              f"|{vihrea}{pelaaja.nimi:^15}{vari_reset}|{syaani}{'(1) Hyökkää':^17}{vari_reset}|{vihrea}{vihollinen.nimi:^15}{vari_reset}|{keltainen}{loki_txt1:50}{vari_reset}|\n",
+              f"|{punainen}{pelaaja_hp:^15}{vari_reset}|{syaani}{'(2) Taidot ':^17}{vari_reset}|{punainen}{vihollinen_hp:^15}{vari_reset}|{keltainen}{loki_txt2:50}{vari_reset}|\n",
+              f"|{magenta}{pelaaja_tp:^15}{vari_reset}|{syaani}{'(3) Esineet':^17}{vari_reset}|{'':15}|{'':50}|\n"
               f" |{'':15}|{'':17}|{'':15}|{'':50}|\n"
               f" |{'_'*15}|{'_'*17}|{'_'*15}|{'_'*50}|\n")
-        # Tulostaa taidot valikon
-        print(f"  {'_'*100}\n"
-              f" |{Fore.LIGHTYELLOW_EX}{'TAIDOT!':^49}{Style.RESET_ALL}|{Fore.LIGHTYELLOW_EX}{'TAISTELU LOKI':^50}{Style.RESET_ALL}|\n",
-              f"|{'_'*49}|{'_'*50}|\n",
-              f"|{Fore.LIGHTGREEN_EX}{pelaaja.nimi:^15}{Style.RESET_ALL}|{Fore.LIGHTCYAN_EX}{'(1) taito':^17}{Style.RESET_ALL}|{Fore.LIGHTGREEN_EX}{vihollinen.nimi:^15}{Style.RESET_ALL}|{'':50}|\n",
-              f"|{Fore.LIGHTRED_EX}{pelaaja_hp:^15}{Style.RESET_ALL}|{Fore.LIGHTCYAN_EX}{'(2) taito':^17}{Style.RESET_ALL}|{Fore.LIGHTRED_EX}{vihollinen_hp:^15}{Style.RESET_ALL}|{'':50}|\n",
-              f"|{Fore.LIGHTMAGENTA_EX}{pelaaja_tp:^15}{Style.RESET_ALL}|{Fore.LIGHTCYAN_EX}{'(3) taito':^17}{Style.RESET_ALL}|{'':15}|{'':50}|\n"
-              f" |{'':15}|{Fore.LIGHTYELLOW_EX}{'(4) Takaisin':^17}{Style.RESET_ALL}|{'':15}|{'':50}|\n"
-              f" |{'_' * 15}|{'_' * 17}|{'_' * 15}|{'_'*50}|\n")
-        # Tulostaa esine valikon
-        print(f"  {'_'*100}\n"
-              f" |{Fore.LIGHTYELLOW_EX}{'ESINEET!':^49}{Style.RESET_ALL}|{Fore.LIGHTYELLOW_EX}{'TAISTELU LOKI':^50}{Style.RESET_ALL}|\n",
-              f"|{'_'*49}|{'_'*50}|\n",
-              f"|{Fore.LIGHTGREEN_EX}{pelaaja.nimi:^15}{Style.RESET_ALL}|{Fore.LIGHTCYAN_EX}{'(1) Esine':^17}{Style.RESET_ALL}|{Fore.GREEN}{vihollinen.nimi:^15}{Style.RESET_ALL}|{'':50}|\n",
-              f"|{Fore.LIGHTRED_EX}{pelaaja_hp:^15}{Style.RESET_ALL}|{Fore.LIGHTCYAN_EX}{'(2) Esine':^17}{Style.RESET_ALL}|{Fore.RED}{vihollinen_hp:^15}{Style.RESET_ALL}|{'':50}|\n",
-              f"|{Fore.LIGHTMAGENTA_EX}{pelaaja_tp:^15}{Style.RESET_ALL}|{Fore.LIGHTCYAN_EX}{'(3) Esine':^17}{Style.RESET_ALL}|{'':15}|{'':50}|\n"
-              f" |{'':15}|{Fore.LIGHTYELLOW_EX}{'(4) Takaisin':^17}{Style.RESET_ALL}|{'':15}|{'':50}|\n"
-              f" |{'_' * 15}|{'_' * 17}|{'_' * 15}|{'_'*50}|\n")
-        input()
+
+        if pelaaja.hp <= 0:
+            break
+
+        if vihollinen.hp <= 0:
+            break
+
+        taistelu_paa_valinta = input(f"{keltainen}Valitse (1-3):{vari_reset}")
+
+        if taistelu_paa_valinta == '1':
+                loki_txt1 = perus_isku(pelaaja, vihollinen)
+                loki_txt2 = perus_isku_vihollinen(vihollinen, pelaaja)
+
+        elif taistelu_paa_valinta == '2':
+            vaara_taito_valinta_txt = ''
+
+            while True:
+
+                # Tulostaa taidot valikon
+                print(f"  {'_'*100}\n"
+                      f" |{keltainen}{'TAIDOT!':^49}{vari_reset}|{keltainen}{'TAISTELU LOKI':^50}{vari_reset}|\n",
+                      f"|{'_'*49}|{'_'*50}|\n",
+                      f"|{vihrea}{pelaaja.nimi:^15}{vari_reset}|{syaani}{'(1) taito':^17}{vari_reset}|{vihrea}{vihollinen.nimi:^15}{vari_reset}|{loki_txt1:50}|\n",
+                      f"|{punainen}{pelaaja_hp:^15}{vari_reset}|{syaani}{'(2) taito':^17}{vari_reset}|{punainen}{vihollinen_hp:^15}{vari_reset}|{loki_txt2:50}|\n",
+                      f"|{magenta}{pelaaja_tp:^15}{vari_reset}|{syaani}{'(3) taito':^17}{vari_reset}|{'':15}|{'':50}|\n"
+                      f" |{'':15}|{keltainen}{'(4) Takaisin':^17}{vari_reset}|{'':15}|{'':50}|\n"
+                      f" |{'_' * 15}|{'_' * 17}|{'_' * 15}|{'_'*50}|\n")
+                print(f'{punainen}{vaara_taito_valinta_txt}{vari_reset}')
+                taidot_valinta = input(f"{keltainen}Valitse (1-4):{vari_reset}")
+
+                if taidot_valinta == '1':
+                    break
+
+                elif taidot_valinta == '2':
+                    break
+
+                elif taidot_valinta == '3':
+                    break
+
+                elif taidot_valinta == '4':
+                    break
+
+                else:
+                    vaara_taito_valinta_txt = 'Väärä valinta!'
+
+        elif taistelu_paa_valinta == '3':
+
+            while True:
+
+                # Tulostaa esinevalikon
+                print(f"  {'_'*100}\n"
+                      f" |{keltainen}{'ESINEET!':^49}{vari_reset}|{keltainen}{'TAISTELU LOKI':^50}{vari_reset}|\n",
+                      f"|{'_'*49}|{'_'*50}|\n",
+                      f"|{vihrea}{pelaaja.nimi:^15}{vari_reset}|{syaani}{'(1) Esine':^17}{vari_reset}|{vihrea}{vihollinen.nimi:^15}{vari_reset}|{keltainen}{loki_txt1:50}{vari_reset}|\n",
+                      f"|{punainen}{pelaaja_hp:^15}{vari_reset}|{syaani}{'(2) Esine':^17}{vari_reset}|{punainen}{vihollinen_hp:^15}{vari_reset}|{keltainen}{loki_txt2:50}{vari_reset}|\n",
+                      f"|{magenta}{pelaaja_tp:^15}{vari_reset}|{syaani}{'(3) Esine':^17}{vari_reset}|{'':15}|{'':50}|\n"
+                      f" |{'':15}|{keltainen}{'(4) Takaisin':^17}{vari_reset}|{'':15}|{'':50}|\n"
+                      f" |{'_' * 15}|{'_' * 17}|{'_' * 15}|{'_'*50}|\n")
+
+                esine_valinta = input(f"{keltainen}Valitse (1-4):{vari_reset}")
+
+                if esine_valinta == '1':
+                    break
+
+                elif esine_valinta == '2':
+                    break
+
+                elif esine_valinta == '3':
+                    break
+
+                elif esine_valinta == '4':
+                    break
+
+    if vihollinen.hp <= 0:
+        input(f'{vihrea}Voitit Taistelun!{vari_reset}{keltainen} Paina Enter jatkaaksesi...{vari_reset}')
+
+    if pelaaja.hp <= 0:
+        input(f'{punainen}Voi ei! Hävisit taistelun!{vari_reset} {keltainen}Paina Enter jatkaaksesi...{vari_reset}')
 
 
 # Laskee taistelun mahdollisuuden
@@ -378,17 +450,20 @@ def taustatarina():
     yn = input('Haluatko lukea taustatarinan ja ohjeet? Y/N: ')
 
     if yn.upper() == 'Y':
-        print('kauan sitten diipadaapa')
-        print(f'Seikkailusi alkaa kohteesta {nykyinen_sijainti["fantasia_nimi"]}')
-        print('Tehtäväsi on löytää pahuksen sormus ja viedä se tulivuoreen')
-        print('Voit matkustaa kohteisiin valitsemalla niitä edeltävän numeron')
-        print('Yritä löytää sormus mahdollisimman nopeasti ja viedä se tulivuoreen,',
-              'mutta pidemmälle matkustaessa riskit kasvavat')
+        print(f'Pahuus on alkanut saastuttaa maailmaa. Tarujen mukaan kauan sitten kuollut {punainen}Dracula Vlad{vari_reset} on palannut.\n'
+              'Hänet voi pysäyttää vain legendaarisen pahuksen sormuksen voimalla.')
+        print(f'Tehtäväsi on löytää pahuksen sormus ja viedä se tulivuoreen jossa kohtaat {punainen}Dracula Vladin{vari_reset}.')
+        print('Voit matkustaa kohteisiin valitsemalla niitä edeltävän numeron.')
+        print('Yritä löytää sormus mahdollisimman nopeasti ja viedä se tulivuoreen,\n'
+              'mutta muista, että mitä pidemmälle matkustat, sitä suurempi riski on kohdata Dracula Vladin kätyreitä.')
+        print(f'Seikkailusi alkaa kohteesta {vihrea}{nykyinen_sijainti["fantasia_nimi"]}{vari_reset}.')
+        print('')
 
     elif yn.upper() == 'N':
-        print(f'Seikkailusi alkaa kohteesta {nykyinen_sijainti["fantasia_nimi"]}')
+        print(f'Seikkailusi alkaa kohteesta {vihrea}{nykyinen_sijainti["fantasia_nimi"]}{vari_reset}')
+        print('')
+        input(f'{punainen}Paina Enter jatkaaksesi...{vari_reset}')
 
-    input('\033[31mPaina Enter jatkaaksesi...\033[0m')
 
 
 # Tarkastaa onko pelaajan sijainnissa sormus ja paluttaa arvon True tai False
@@ -400,15 +475,16 @@ def onko_kohteessa_sormus():
         return True
 
     else:
-        print('Kohteessa ei ole sormusta :(')
-        input('\033[31mPaina Enter jatkaaksesi...\033[0m')
+        print(f'{punainen}Kohteessa ei ole sormusta{vari_reset}')
+        print('')
+        input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}')
         return False
 
 
 # PÄÄOHJELMA:
 
 # Pelin alustus
-winsound.PlaySound('adventure.wav', winsound.SND_LOOP | winsound.SND_ASYNC | winsound.SND_FILENAME)
+# winsound.PlaySound('adventure.wav', winsound.SND_LOOP | winsound.SND_ASYNC | winsound.SND_FILENAME)
 pelaaja = paavalikko()
 sormus_sijainti = sormus_arpominen()
 nykyinen_sijainti = pelaajan_sijainti(pelaaja.id)
@@ -416,13 +492,13 @@ nykyinen_sijainti = pelaajan_sijainti(pelaaja.id)
 
 # Peli käynnissä
 taustatarina()
+
 while True:
-# pelaaja valitsee minne haluaa matkustaa
 
-    valinta = sijainti_valitsin(pelaaja)
+    # pelaaja valitsee minne haluaa matkustaa
+    valinta = int(sijainti_valitsin(pelaaja))
 
-# arvotaan taistelu etäisyyden perusteella
-
+    # arvotaan taistelu etäisyyden perusteella
     if taistelu_mahdollisuus_laskuri(paivien_lisaaja(valinta, pelaaja)):
         taistelu(pelaaja, hae_random_vihollinen())
 
@@ -433,4 +509,4 @@ while True:
     #tallennus(pelaaja) ei tallennusta testi vaiheessa
     nykyinen_sijainti = pelaajan_sijainti(pelaaja.id)
 
-# Peli loppuu
+# Peli loppuu'
