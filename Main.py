@@ -78,6 +78,56 @@ class Vihollinen:
 
 
 # FUNKTIOT:
+def esineen_maara(pelaaja):
+    sql = f'SELECT esine_nimi FROM inventaario, esineet, peli WHERE esineen_id = esine_id AND pelaajan_id = "{pelaaja.id}"'
+    kursori = yhteys.cursor(dictionary=True)
+    kursori.execute(sql)
+    esineet = kursori.fetchall()
+    if len(esineet) >= 3:
+        print('Sinulle ei mahdu kuin 3 esinettä')
+        return False
+    else:
+        print('Sinulle mahtuu esineitä.')
+        return True
+
+
+def esineen_arvonta(pelaaja):
+    randomi = random.randint(1, 20)
+    if randomi >= 10:
+        sql = 'SELECT * FROM esineet ORDER by RAND() LIMIT 1'
+        kursori = yhteys.cursor(dictionary=True)
+        kursori.execute(sql)
+        random_esine = kursori.fetchone()
+
+        print(f"Sait {vihrea}{random_esine['esine_nimi']}{vari_reset}")
+
+        sql = (f'INSERT INTO inventaario (pelaajan_id, esineen_id)'
+        f'VALUES ({pelaaja.id}, {random_esine["esine_id"]})')
+        kursori.execute(sql)
+    return
+
+
+def haluatko_nukkua(pelaaja):
+    valinta = input('Haluatko levätä yhden päivän ja palauttaa HP ja TP täysille? Y/N: ')
+    while True:
+        if valinta.upper() != 'Y' and valinta.upper() != 'N':
+            valinta = input('Virheellinen syöte. kirjoita Y (kyllä) tai N (ei)')
+        else:
+            break
+    if valinta.upper() == 'Y':
+        print(f'pelaaja hp vanha {pelaaja.hp}')
+        pelaaja.hp = pelaaja.maxhp
+        print(f'pelaaja hp uusi {pelaaja.hp}')
+        print(f'pelaaja tp vanha {pelaaja.taitopiste}')
+        pelaaja.taitopiste = pelaaja.max_taitopiste
+        print(f'pelaaja tp uusi {pelaaja.taitopiste}')
+
+        pelaaja.menneet_paivat += 1
+
+    else:
+        print('Päätit jatkaa lepäämättä. Rohkeaa.')
+
+
 def hae_kaikki_kohteet(pelaaja):
 
     sql = f'''SELECT airport.id, airport.fantasia_nimi, airport.latitude_deg, airport.longitude_deg 
@@ -92,7 +142,7 @@ def hae_kaikki_kohteet(pelaaja):
 
 def hae_random_vihollinen():
 
-    sql = 'SELECT * FROM viholliset ORDER by RAND() LIMIT 1'
+    sql = 'SELECT * FROM viholliset WHERE bossi = "0" ORDER by RAND() LIMIT 1'
     kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
     haku_tiedot = kursori.fetchone()
@@ -100,6 +150,18 @@ def hae_random_vihollinen():
                             haku_tiedot['vihollinen_maksimi_hp'], haku_tiedot['vihollinen_suojaus'],
                             haku_tiedot['vihollinen_isku'])
     return vihollinen
+
+def hae_bossi():
+
+    sql = 'SELECT * FROM viholliset WHERE bossi = "1" ORDER by RAND() LIMIT 1'
+    kursori = yhteys.cursor(dictionary=True)
+    kursori.execute(sql)
+    haku_tiedot = kursori.fetchone()
+    vihollinen = Vihollinen(haku_tiedot['vihollinen_id'], haku_tiedot['vihollinen_nimi'], haku_tiedot['vihollinen_hp'],
+                            haku_tiedot['vihollinen_maksimi_hp'], haku_tiedot['vihollinen_suojaus'],
+                            haku_tiedot['vihollinen_isku'])
+    return vihollinen
+
 
 
 def km_to_day(matka):
@@ -127,7 +189,7 @@ def luo_peli():
     while True:
         nimi = input('Anna hahmollesi nimi: ')
 
-        if len(nimi) < 0:
+        if len(nimi) < 1:
             print('Et voi antaa tyhjää nimeä.')
 
         elif len(nimi) > 12:
@@ -135,6 +197,7 @@ def luo_peli():
 
         else:
             break
+
 
     sql = 'INSERT INTO peli (pelaaja_nimi)'
     sql += f"VALUE ('{nimi}');"
@@ -158,7 +221,8 @@ def luo_pelaaja(peli_id):
     pelaaja = Pelaaja(haku_tiedot['peli_id'], haku_tiedot['pelaaja_nimi'], haku_tiedot['pelaaja_sijainti'],
                       haku_tiedot['menneet_paivat'], haku_tiedot['pelaaja_hp'], haku_tiedot['pelaaja_maksimi_hp'],
                       haku_tiedot['pelaaja_suojaus'], haku_tiedot['pelaaja_isku'],
-                      haku_tiedot['pelaaja_taitopiste'], haku_tiedot['pelaaja_maksimi_taitopiste'], haku_tiedot['onko_sormus'])
+                      haku_tiedot['pelaaja_taitopiste'], haku_tiedot['pelaaja_maksimi_taitopiste'],
+                      haku_tiedot['onko_sormus'], haku_tiedot['sormus_sijainti'])
     return pelaaja
 
 
@@ -202,19 +266,20 @@ def sijainti_valitsin(pelaaja):
         matka = distance.distance(alku_koordinaatit, loppu_koordinaatit).km
 
         if matka < 50:
-            print(f"{kohde['id']:2}. Kohteeseen {kohde['fantasia_nimi']:28} {km_to_day(matka)} päivän matkustus.")
+            print(f"{kohde['id']:2}. Kohteeseen {syaani}{kohde['fantasia_nimi']:28}{vari_reset} {km_to_day(matka)} päivän matkustus.")
             id_lista.append(kohde['id'])
         elif matka < 100:
-            print(f"{kohde['id']:2}. Kohteeseen {kohde['fantasia_nimi']:28} {km_to_day(matka)} päivän matkustus.")
+            print(f"{kohde['id']:2}. Kohteeseen {syaani}{kohde['fantasia_nimi']:28}{vari_reset} {km_to_day(matka)} päivän matkustus.")
             id_lista.append(kohde['id'])
         elif matka < 200:
-            print(f"{kohde['id']:2}. Kohteeseen {kohde['fantasia_nimi']:28} {km_to_day(matka)} päivän matkustus.")
+            print(f"{kohde['id']:2}. Kohteeseen {syaani}{kohde['fantasia_nimi']:28}{vari_reset} {km_to_day(matka)} päivän matkustus.")
             id_lista.append(kohde['id'])
         elif matka > 200:
-            print(f"{kohde['id']:2}. Kohteeseen {kohde['fantasia_nimi']:28} {km_to_day(matka)} päivän matkustus.")
+            print(f"{kohde['id']:2}. Kohteeseen {syaani}{kohde['fantasia_nimi']:28}{vari_reset} {km_to_day(matka)} päivän matkustus.")
             id_lista.append(kohde['id'])
-
-    print(f'Olet kohteessa {nykyinen_sijainti["fantasia_nimi"]}')
+    print('')
+    print(f'Olet kohteessa {vihrea}{nykyinen_sijainti["fantasia_nimi"]}{vari_reset}')
+    print('')
 
     while True:
 
@@ -246,6 +311,7 @@ def paavalikko():
 
         if keyboard.is_pressed("1"):
             pelaaja = luo_pelaaja(luo_peli())
+            pelaaja.sormus_sijainti = sormus_arpominen(pelaaja)
             break
 
         if keyboard.is_pressed("2"):
@@ -261,19 +327,16 @@ def paavalikko():
 def paivien_lisaaja(haluttu_kohde_id, pelaaja):
 
     sql = f'''SELECT airport.id, airport.fantasia_nimi, airport.latitude_deg, airport.longitude_deg 
-              FROM airport WHERE airport.id = {haluttu_kohde_id}'''
+              FROM airport WHERE airport.id = "{haluttu_kohde_id}"'''
     kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
     kohde = kursori.fetchone()
     loppu_koordinaatit = kohde['latitude_deg'], kohde['longitude_deg']
     alku_koordinaatit = nykyinen_sijainti['latitude_deg'], nykyinen_sijainti['longitude_deg']
     matka = distance.distance(alku_koordinaatit, loppu_koordinaatit).km
-    pelaaja.menneet_paivat = int(pelaaja.menneet_paivat) + int(km_to_day(matka))
-    pelaaja.sijainti = int(kohde["id"])
 
-    #testauksen vuoksi tulostus
-    print(f'Pelaajaolion sijainti on {pelaaja.sijainti}')
-    print(f'Pelaajaolion käytetyt päivät ovat {pelaaja.menneet_paivat}')
+    #lisätään pelaajalle matkus1tuksen päivät
+    pelaaja.menneet_paivat = int(pelaaja.menneet_paivat) + int(km_to_day(matka))
 
     return km_to_day(matka)
 
@@ -295,6 +358,45 @@ def pelaajan_sijainti(peli_id):
     tiedot = kursori.fetchone()
     #print(tiedot)
     return tiedot
+
+
+def pelaajan_sijainti_tiedot_haku(pelaaja):
+    sql = f'''SELECT airport.id, airport.fantasia_nimi, airport.latitude_deg, airport.longitude_deg
+              FROM airport
+              WHERE airport.id = "{pelaaja.sijainti}"'''
+    kursori = yhteys.cursor(dictionary=True)
+    kursori.execute(sql)
+    tiedot = kursori.fetchone()
+    #print(tiedot)
+    return tiedot
+
+
+def perus_isku(pelaaja, vihollinen):
+    if pelaaja.hp > 0:
+        isku_osuma = random.randint(1, 20) + 2
+        if isku_osuma >= vihollinen.suojaus:
+            isku = random.randint(1, pelaaja.isku) + 2
+            vihollinen.hp = int(vihollinen.hp) - isku
+            loki_printtaus1 = f'Teit {isku} vahinkoa!'
+        else:
+            loki_printtaus1 = 'Vihollinen väisti iskusi.'
+
+    else:
+        loki_printtaus1 = 'Olet kuollut.'
+    return loki_printtaus1
+
+def perus_isku_vihollinen(vihollinen, pelaaja):
+    if vihollinen.hp > 0:
+        isku_osuma = random.randint(1, 20) + 2
+        if isku_osuma >= pelaaja.suojaus:
+            isku = random.randint(1, vihollinen.isku) + 2
+            pelaaja.hp = int(pelaaja.hp) - isku
+            loki_printtaus2 = f'Vihollinen teki {isku} vahinkoa!'
+        else:
+            loki_printtaus2 = 'Väistit vihollisen iskun!'
+    else:
+        loki_printtaus2 = 'Vihollinen kuoli!'
+    return loki_printtaus2
 
 
 # Arpoo sormuksen sijainnin peli-tauluun
@@ -422,14 +524,14 @@ def taistelu_mahdollisuus_laskuri(matkan_paivat):
 
     heitto = random.randint(1, 20)
 
-    if heitto + matkan_paivat > 12:
-        print('Matkustit liian varomattomasti. Jouduit taisteluun!')
-        input('\033[31mPaina Enter jatkaaksesi...\033[0m')
+    if heitto + matkan_paivat > 10:
+        print(f'{punainen}Matkustit liian varomattomasti. Jouduit taisteluun!{vari_reset}')
+        input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}')
         return True
 
-    elif heitto + matkan_paivat <= 12:
-        print('Saavuit kohteeseen ilman taistelua')
-        input('\033[31mPaina Enter jatkaaksesi...\033[0m')
+    elif heitto + matkan_paivat <= 10:
+        print(f'{vihrea}Saavuit kohteeseen ilman taistelua{vari_reset}')
+        input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}')
         return False
 
 
@@ -438,7 +540,8 @@ def tallennus(pelaaja):
 
     sql = f'''UPDATE peli SET pelaaja_sijainti = {pelaaja.sijainti},
               menneet_paivat = {pelaaja.menneet_paivat}, pelaaja_hp = {pelaaja.hp},
-              pelaaja_taitopiste = {pelaaja.taitopiste} WHERE peli_id = {pelaaja.id}'''
+              pelaaja_taitopiste = {pelaaja.taitopiste}, onko_sormus = {pelaaja.onko_sormus} 
+              WHERE peli_id = {pelaaja.id}'''
     kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
     print('Peli tallennettu')
@@ -489,11 +592,13 @@ def tuleeko_event():
 
 
 # Tarkastaa onko pelaajan sijainnissa sormus ja paluttaa arvon True tai False
-def onko_kohteessa_sormus():
+def onko_kohteessa_sormus(pelaaja):
 
-    if pelaaja.sijainti == sormus_sijainti:
-        print('Löysit sormuksen!!')
-        input('\033[31mPaina Enter jatkaaksesi...\033[0m')
+    if int(pelaaja.sijainti) == int(pelaaja.sormus_sijainti):
+        print(f'{vihrea}Löysit sormuksen!!{vari_reset}')
+        pelaaja.onko_sormus = 1
+        print('')
+        input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}')
         return True
 
     else:
@@ -508,7 +613,6 @@ def onko_kohteessa_sormus():
 # Pelin alustus
 # winsound.PlaySound('adventure.wav', winsound.SND_LOOP | winsound.SND_ASYNC | winsound.SND_FILENAME)
 pelaaja = paavalikko()
-sormus_sijainti = sormus_arpominen()
 nykyinen_sijainti = pelaajan_sijainti(pelaaja.id)
 
 
@@ -524,11 +628,37 @@ while True:
     if taistelu_mahdollisuus_laskuri(paivien_lisaaja(valinta, pelaaja)):
         taistelu(pelaaja, hae_random_vihollinen())
 
+    if pelaaja.hp <= 0:
+        print('Sinä kuolit.')
+        break
+
+    if esineen_maara(pelaaja) == True:
+        esineen_arvonta(pelaaja)
+
     paivien_lisaaja(valinta, pelaaja)
+
+    # Päivitetään pelaajan sijainti taistelun jälkeen
+    pelaaja.sijainti = int(valinta)
+
+
+    nykyinen_sijainti = pelaajan_sijainti_tiedot_haku(pelaaja)
+    print(f'Pelaaja olion id sijainti {pelaaja.sijainti}')
+    print(f'Olet saapunut kohteeseen {nykyinen_sijainti["fantasia_nimi"]}')
+
+    # Tarkistaa onko kohteessa sormusta. Jos on se lisää sen pelaajalle
+    onko_kohteessa_sormus(pelaaja)
+
+    # Haluaako pelaaja nukkua
+    if pelaaja.hp != pelaaja.maxhp or pelaaja.taitopiste != pelaaja.max_taitopiste:
+        haluatko_nukkua(pelaaja)
+
+    if pelaaja.sijainti == 10 and pelaaja.onko_sormus == 1:
+        # boss fight tähän
+
+        taistelu(pelaaja, hae_bossi())
 
 # tallennus taistelun jälkeen
 
-    #tallennus(pelaaja) ei tallennusta testi vaiheessa
-    nykyinen_sijainti = pelaajan_sijainti(pelaaja.id)
+    tallennus(pelaaja)
 
 # Peli loppuu'
