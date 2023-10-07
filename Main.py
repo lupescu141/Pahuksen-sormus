@@ -283,6 +283,7 @@ def poistu():
     sys.exit(0)
 
 
+
 # Palauttaa sijainnin tiedot airport taulusta pelaajan sijainnin perusteella
 def pelaajan_sijainti(peli_id):
 
