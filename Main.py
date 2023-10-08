@@ -724,7 +724,6 @@ def taustatarina():
         input(f'{punainen}Paina Enter jatkaaksesi...{vari_reset}')
 
 
-
 # Arpoo tuleeko event ja hakee sen randomilla taulusta
 def tuleeko_event():
 
