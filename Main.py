@@ -621,10 +621,10 @@ taustatarina()
 
 while True:
 
-    # pelaaja valitsee minne haluaa matkustaa
+    # Pelaaja valitsee minne haluaa matkustaa
     valinta = int(sijainti_valitsin(pelaaja))
 
-    # arvotaan taistelu etäisyyden perusteella
+    # Arvotaan taistelu etäisyyden perusteella
     if taistelu_mahdollisuus_laskuri(paivien_lisaaja(valinta, pelaaja)):
         taistelu(pelaaja, hae_random_vihollinen())
 
