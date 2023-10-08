@@ -315,6 +315,25 @@ def paavalikko():
 
     return pelaaja
 
+
+# Tarkastaa onko pelaajan sijainnissa sormus ja paluttaa arvon True tai False
+def onko_kohteessa_sormus(pelaaja):
+
+    if int(pelaaja.sijainti) == int(pelaaja.sormus_sijainti):
+
+        print(f'{vihrea}Löysit sormuksen!!{vari_reset}')
+        pelaaja.onko_sormus = 1
+        print('')
+        input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}')
+        return True
+
+    else:
+        print(f'{punainen}Kohteessa ei ole sormusta{vari_reset}')
+        print('')
+        input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}')
+        return False
+
+
 def paivien_lisaaja(haluttu_kohde_id, pelaaja):
 
     sql = f'''SELECT airport.id, airport.fantasia_nimi, airport.latitude_deg, airport.longitude_deg 
@@ -662,7 +681,7 @@ def taistelu_mahdollisuus_laskuri(matkan_paivat):
 
 
 # Tallentaa pelaajan tiedot peli-tauluun
-def tallennus(pelaaja):
+def tallennus(pelaaja, inventaario):
 
     sql = f'''UPDATE peli SET pelaaja_sijainti = {pelaaja.sijainti},
               menneet_paivat = {pelaaja.menneet_paivat}, pelaaja_hp = {pelaaja.hp},
@@ -670,6 +689,16 @@ def tallennus(pelaaja):
               WHERE peli_id = {pelaaja.id}'''
     kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
+
+    sql = f'DELETE FROM inventaario WHERE pelaajan_id = "{int(pelaaja.id)}"'
+    kursori = yhteys.cursor()
+    kursori.execute(sql)
+
+    for esine in  inventaario:
+        sql = f'INSERT INTO inventaario (pelaajan_id, esineen_id) VALUES ({pelaaja.id}, {esine["esineen_id"]})'
+        kursori = yhteys.cursor(dictionary=True)
+        kursori.execute(sql)
+
     print('Peli tallennettu')
     return
 
@@ -733,6 +762,7 @@ def tulipallo(pelaaja, vihollinen):
 # winsound.PlaySound('adventure.wav', winsound.SND_LOOP | winsound.SND_ASYNC | winsound.SND_FILENAME)
 pelaaja = paavalikko()
 nykyinen_sijainti = pelaajan_sijainti(pelaaja.id)
+inventaario = esineiden_haku(pelaaja)
 
 
 # Peli käynnissä
