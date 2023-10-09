@@ -137,7 +137,7 @@ def haluatko_nukkua(pelaaja):
     if valinta.upper() == 'Y':
         pelaaja.hp = pelaaja.maxhp
         pelaaja.taitopiste = pelaaja.max_taitopiste
-        print(f'{punainen}HP: {pelaaja.hp}/{pelaaja.maxhp}   {magenta}TP: {pelaaja.taitopiste}/{pelaaja.max_taitopiste}')
+        print(f'{punainen}HP: {pelaaja.hp}/{pelaaja.maxhp}   {magenta}TP: {pelaaja.taitopiste}/{pelaaja.max_taitopiste}{vari_reset}')
         pelaaja.menneet_paivat += 1
 
     else:
@@ -437,22 +437,23 @@ def sijainti_valitsin(pelaaja):
         matka = distance.distance(alku_koordinaatit, loppu_koordinaatit).km
 
         if matka < 50:
-            print(f"{kohde['id']:2}. Kohteeseen {syaani}{kohde['fantasia_nimi']:28}{vari_reset} {km_to_day(matka)} päivän matkustus.")
+            print(f"{kohde['id']:2}. Kohteeseen {syaani}{kohde['fantasia_nimi']:28}{vari_reset} {keltainen}{km_to_day(matka)}{vari_reset} päivän matkustus.")
             id_lista.append(kohde['id'])
 
         elif matka < 100:
-            print(f"{kohde['id']:2}. Kohteeseen {syaani}{kohde['fantasia_nimi']:28}{vari_reset} {km_to_day(matka)} päivän matkustus.")
+            print(f"{kohde['id']:2}. Kohteeseen {syaani}{kohde['fantasia_nimi']:28}{vari_reset} {keltainen}{km_to_day(matka)}{vari_reset} päivän matkustus.")
             id_lista.append(kohde['id'])
 
         elif matka < 200:
-            print(f"{kohde['id']:2}. Kohteeseen {syaani}{kohde['fantasia_nimi']:28}{vari_reset} {km_to_day(matka)} päivän matkustus.")
+            print(f"{kohde['id']:2}. Kohteeseen {syaani}{kohde['fantasia_nimi']:28}{vari_reset} {keltainen}{km_to_day(matka)}{vari_reset} päivän matkustus.")
             id_lista.append(kohde['id'])
 
         elif matka > 200:
-            print(f"{kohde['id']:2}. Kohteeseen {syaani}{kohde['fantasia_nimi']:28}{vari_reset} {km_to_day(matka)} päivän matkustus.")
+            print(f"{kohde['id']:2}. Kohteeseen {syaani}{kohde['fantasia_nimi']:28}{vari_reset} {keltainen}{km_to_day(matka)}{vari_reset} päivän matkustus.")
             id_lista.append(kohde['id'])
 
-    print(f'\nOlet kohteessa {vihrea}{nykyinen_sijainti["fantasia_nimi"]}{vari_reset}\n')
+    print(f'\nOlet kohteessa {vihrea}{nykyinen_sijainti["fantasia_nimi"]}{vari_reset}\n'
+          f"Seikkailuun on kulunut: {keltainen}{pelaaja.menneet_paivat}{vari_reset} päivää\n")
 
     while True:
 
@@ -546,7 +547,7 @@ def taistelu(pelaaja, vihollinen):
             while True:
 
                 try:
-                    taito1 = 'Tulipallo'
+                    taito1 = taidot[0]['taito_nimi']
                 except:
                     taito1 = 'Tyhjä'
 
@@ -574,7 +575,7 @@ def taistelu(pelaaja, vihollinen):
 
                 if taidot_valinta == '1':
 
-                    if taito1 == 'Tulipallo' and pelaaja.taitopiste > 0:
+                    if taito1 == 'tulipallo' and pelaaja.taitopiste > 0:
                         loki_txt1 = tulipallo(pelaaja, vihollinen)
                         loki_txt2 = perus_isku_vihollinen(vihollinen,pelaaja)
                         break
@@ -713,7 +714,7 @@ def tallennus(pelaaja, inventaario):
         kursori = yhteys.cursor(dictionary=True)
         kursori.execute(sql)
 
-    print('Peli tallennettu')
+    print(f'\nPeli tallennettu\n')
     return
 
 
@@ -735,7 +736,7 @@ def taustatarina():
     elif yn.upper() == 'N':
         print(f'Seikkailusi alkaa kohteesta {vihrea}{nykyinen_sijainti["fantasia_nimi"]}{vari_reset}')
         print('')
-        input(f'{punainen}Paina Enter jatkaaksesi...{vari_reset}')
+        input(f'{punainen}Paina Enter jatkaaksesi...{vari_reset}\n')
 
 
 # Arpoo tuleeko event ja hakee sen randomilla taulusta
