@@ -129,7 +129,7 @@ def haluatko_nukkua(pelaaja):
 
         if valinta.upper() != 'Y' and valinta.upper() != 'N':
 
-            valinta = input('Virheellinen syöte. kirjoita Y (kyllä) tai N (ei)')
+            valinta = input('Virheellinen syöte. kirjoita Y (kyllä) tai N (ei) ')
 
         else:
             break
@@ -178,6 +178,8 @@ def hae_bossi():
                             haku_tiedot['vihollinen_maksimi_hp'], haku_tiedot['vihollinen_suojaus'],
                             haku_tiedot['vihollinen_isku'])
     return vihollinen
+
+
 
 
 def km_to_day(matka):
@@ -319,19 +321,21 @@ def paavalikko():
 # Tarkastaa onko pelaajan sijainnissa sormus ja paluttaa arvon True tai False
 def onko_kohteessa_sormus(pelaaja):
 
-    if int(pelaaja.sijainti) == int(pelaaja.sormus_sijainti):
+    if pelaaja.onko_sormus == 0:
 
-        print(f'{vihrea}Löysit sormuksen!!{vari_reset}')
-        pelaaja.onko_sormus = 1
-        print('')
-        input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}')
-        return True
+        if int(pelaaja.sijainti) == int(pelaaja.sormus_sijainti):
 
-    else:
-        print(f'{punainen}Kohteessa ei ole sormusta{vari_reset}')
-        print('')
-        input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}')
-        return False
+            print(f'{vihrea}Löysit sormuksen!!{vari_reset}')
+            pelaaja.onko_sormus = 1
+            print('')
+            input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}')
+            return True
+
+        else:
+            print(f'{punainen}Kohteessa ei ole sormusta{vari_reset}')
+            print('')
+            input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}')
+            return False
 
 
 def paivien_lisaaja(haluttu_kohde_id, pelaaja):
@@ -346,7 +350,7 @@ def paivien_lisaaja(haluttu_kohde_id, pelaaja):
     matka = distance.distance(alku_koordinaatit, loppu_koordinaatit).km
 
     #lisätään pelaajalle matkus1tuksen päivät
-    pelaaja.menneet_paivat = int(pelaaja.menneet_paivat) + int(km_to_day(matka))
+    pelaaja.menneet_paivat += + int(km_to_day(matka))
 
     return km_to_day(matka)
 
@@ -487,6 +491,16 @@ def sormus_arpominen(pelaaja):
     #print('Testaamisen vuoksi:')
     #print('sormuksen random sijainti on ' + str(sijainti_id['id']))
     return sijainti_id['id']
+
+
+def taito_haku(pelaaja):
+
+    sql = f'SELECT taito_nimi FROM taidot'
+    kursori = yhteys.cursor(dictionary=True)
+    kursori.execute(sql)
+    taito_lista = kursori.fetchall()
+
+    return taito_lista
 
 
 # Tulostaa taisteluvalikon ja ohjaa taistelua
@@ -709,7 +723,7 @@ def taustatarina():
     yn = input('Haluatko lukea taustatarinan ja ohjeet? Y/N: ')
 
     if yn.upper() == 'Y':
-        print(f'Pahuus on alkanut saastuttaa maailmaa. Tarujen mukaan kauan sitten kuollut {punainen}Dracula Vlad{vari_reset} on palannut.\n'
+        print(f'Pahuus on alkanut saastuttaa maailmaa. Tarujen mukaan kauan sitten {punainen}Dracula Vlad{vari_reset} Viljeli pahuutta maailmaan.\n'
               'Hänet voi pysäyttää vain legendaarisen pahuksen sormuksen voimalla.')
         print(f'Tehtäväsi on löytää pahuksen sormus ja viedä se tulivuoreen jossa kohtaat {punainen}Dracula Vladin{vari_reset}.')
         print('Voit matkustaa kohteisiin valitsemalla niitä edeltävän numeron.')
@@ -762,6 +776,7 @@ def tulipallo(pelaaja, vihollinen):
 pelaaja = paavalikko()
 nykyinen_sijainti = pelaajan_sijainti(pelaaja.id)
 inventaario = esineiden_haku(pelaaja)
+taidot = taito_haku(pelaaja)
 
 
 # Peli käynnissä
@@ -805,7 +820,48 @@ while True:
     if pelaaja.sijainti == 10 and pelaaja.onko_sormus == 1:
         # boss fight tähän
 
-        taistelu(pelaaja, hae_bossi())
+        print(f'Olet saapunut tulivuoren huipulle. Allasi hehkuu valtava laavameri.'
+              f'Pitelet sormusta kädessäsi, valmiina heittämään sen tulivuoreen...'
+              f'Yhtäkkiä sormus alkaa polttaa kädessäsi ja se putoaa jalkoihisi. '
+              f'Näät kuinka sormus alkaa hehkua'
+              f'Sormus ottaa pahan {punainen}Dracula Vladin{vari_reset} muodon.')
+
+        print('')
+        print(f'{punainen}Dracula Vlad: "Maailma on minun. Valmistaudu kuolemaan."')
+        input(f'{keltainen}Paina Enter aloittaaksesi viimeinen taistelu...{vari_reset}')
+
+        if taistelu(pelaaja, hae_bossi()) == True:
+
+            print(f'Olet päihittänyt sormuksen herran, sinulla on nyt edessäsi elämäsi tärkein valinta...\n')
+
+            while True:
+                lopetus = input(f'Valitse: {keltainen}(1) {vari_reset}{vihrea}Heitä sormus tulivuoreen.{vari_reset} tai {keltainen}(2) {vari_reset}{punainen}Ota haltuun sormuksen voima.{vari_reset}\n')
+
+                if lopetus == '1' or lopetus == '2':
+                    break
+                else:
+                    print(f'Tee valinta! {vihrea}(1){vari_reset} tai {punainen}(2){vari_reset}:\n')
+
+            if lopetus == '1':
+                print(f'Heität sormuksen tulivuoreen ja näät kuinka se laskeutuu hehkuvaan laavamereen.\n'
+                      f'Hetken sormus pysyy pinnalla, mutta nopeasti se sulaa ja uppoaa laavaan.\n'
+                      f'Päästät huokauksen helpotuksesta ja katsot ylös kuinka taivas kirkastuu.\n'
+                      f'Sormuksen vaikutus alkaa jo pikkuhiljaa hiipua maailmasta.\n'
+                      f'Uutinen teostasi kulkee läpi maailman nopeasti, sinusta on tuleva legenda! Maailman väki HURRAA sankaruudellesi!\n')
+                print(f'Onneksi olkoon! Seikkailusi kesti {keltainen}{pelaaja.menneet_paivat}{vari_reset} päivää.\n')
+
+            if lopetus == '2':
+                print('Katsot sormusta ja alla hehkuvaa laavamerta. Sormus tarjoaa käyttäjälleen voimaa ja valtaa.\n'
+                      'Se houkuttelee sinua ja antaudut sen valtaan.\n'
+                      'Laitat sormuksen sormeen ja tunnet kuinka voima alkaa kasvaa sisälläsi.\n'
+                      'Mielestäsi sinun tulisi ohjata maailmaa, vai onko se sormuksen vaikutus sinuun\n'
+                      'Sormuksen vaikutus maailmaan kasvaa ja uudet kätyrit nousevat sinun komennettavaksi\n'
+                      'Uutinen teostasi kulkee läpi maailman nopeasti, Maailman väki on kauhuissaan mitä on tulevaksi.\n')
+                print(f'Onneksi olkoon! Seikkailusi kesti {keltainen}{pelaaja.menneet_paivat}{vari_reset} päivää.')
+
+        else:
+            print(f'Olet epäonnistunut.')
+            print(f'Seikkailusi kesti {keltainen}{pelaaja.menneet_paivat}{vari_reset} päivää.')
 
     # tallennus taistelun jälkeen
     tallennus(pelaaja, inventaario)
