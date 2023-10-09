@@ -7,9 +7,10 @@ import mysql.connector
 from mysql.connector import errorcode
 import keyboard
 import random
-import winsound
 import sys
 import time
+import pygame
+
 
 # TEKSTIVÄRIT:
 punainen = colorama.Fore.LIGHTRED_EX
@@ -78,6 +79,7 @@ class Vihollinen:
 
 
 # FUNKTIOT:
+
 def esineiden_haku(pelaaja):
 
     sql = f'SELECT esine_nimi, esineen_id FROM inventaario, esineet, peli WHERE esineen_id = esine_id AND pelaajan_id = "{pelaaja.id}"'
@@ -178,8 +180,6 @@ def hae_bossi():
                             haku_tiedot['vihollinen_maksimi_hp'], haku_tiedot['vihollinen_suojaus'],
                             haku_tiedot['vihollinen_isku'])
     return vihollinen
-
-
 
 
 def km_to_day(matka):
@@ -414,14 +414,18 @@ def perus_isku_vihollinen(vihollinen, pelaaja):
         if isku_osuma >= pelaaja.suojaus:
 
             isku = random.randint(1, vihollinen.isku) + 2
-            pelaaja.hp = int(pelaaja.hp) - isku
+            pelaaja.hp -= isku
+
+            if pelaaja.hp < 0:
+                pelaaja.hp = 0
+
             loki_printtaus2 = f'Vihollinen teki {isku} vahinkoa!'
 
         else:
-            loki_printtaus2 = 'Väistit vihollisen iskun!'
+            loki_printtaus2 = f'Väistit vihollisen iskun!'
 
     else:
-        loki_printtaus2 = 'Vihollinen kuoli!'
+        loki_printtaus2 = f'Vihollinen kuoli!'
 
     return loki_printtaus2
 
@@ -537,8 +541,8 @@ def taistelu(pelaaja, vihollinen):
 
         if taistelu_paa_valinta == '1':
 
-                loki_txt1 = perus_isku(pelaaja, vihollinen)
-                loki_txt2 = perus_isku_vihollinen(vihollinen, pelaaja)
+            loki_txt1 = perus_isku(pelaaja, vihollinen)
+            loki_txt2 = perus_isku_vihollinen(vihollinen, pelaaja)
 
         elif taistelu_paa_valinta == '2':
 
@@ -641,7 +645,7 @@ def taistelu(pelaaja, vihollinen):
                         break
 
                     if esine1 == 'Tyhjä':
-                        vaara_esine_valinta_txt ='Esinettä ei ole paikassa 1'
+                        vaara_esine_valinta_txt = 'Esinettä ei ole paikassa 1'
 
                 elif esine_valinta == '2':
 
@@ -678,6 +682,7 @@ def taistelu(pelaaja, vihollinen):
     if pelaaja.hp <= 0:
         input(f'{punainen}Voi ei! Hävisit taistelun!{vari_reset} {keltainen}Paina Enter jatkaaksesi...{vari_reset}')
         return False
+
 
 # Laskee taistelun mahdollisuuden
 def taistelu_mahdollisuus_laskuri(matkan_paivat):
@@ -730,13 +735,11 @@ def taustatarina():
         print('Voit matkustaa kohteisiin valitsemalla niitä edeltävän numeron.')
         print('Yritä löytää sormus mahdollisimman nopeasti ja viedä se tulivuoreen,\n'
               'mutta muista, että mitä pidemmälle matkustat, sitä suurempi riski on kohdata Dracula Vladin kätyreitä.')
-        print(f'Seikkailusi alkaa kohteesta {vihrea}{nykyinen_sijainti["fantasia_nimi"]}{vari_reset}.')
-        print('')
+        print(f'Seikkailusi alkaa kohteesta {vihrea}{nykyinen_sijainti["fantasia_nimi"]}{vari_reset}.\n')
 
     elif yn.upper() == 'N':
-        print(f'Seikkailusi alkaa kohteesta {vihrea}{nykyinen_sijainti["fantasia_nimi"]}{vari_reset}')
-        print('')
-        input(f'{punainen}Paina Enter jatkaaksesi...{vari_reset}\n')
+        print(f'Seikkailusi alkaa kohteesta {vihrea}{nykyinen_sijainti["fantasia_nimi"]}{vari_reset}\n')
+        input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
 
 
 # Arpoo tuleeko event ja hakee sen randomilla taulusta
@@ -755,8 +758,15 @@ def tuleeko_event():
 def eliksiiri(pelaaja):
 
     parannus_arvo = (random.randint(1, 4) * 3) + 2
-    pelaaja.hp += parannus_arvo
-    palautettava_teksti = f'Eliksiiri paransi {parannus_arvo} elämä pistettä'
+    parannettu_maara = 0
+
+    for x in range(0, parannus_arvo):
+        if pelaaja.hp == pelaaja.maxhp:
+            break
+        pelaaja.hp += 1
+        parannettu_maara += 1
+
+    palautettava_teksti = f'Eliksiiri paransi {parannettu_maara} elämä pistettä'
     return palautettava_teksti
 
 
@@ -766,6 +776,8 @@ def tulipallo(pelaaja, vihollinen):
     vahinko_arvo = (random.randint(1, 6) * 2) + 2
     pelaaja.taitopiste -= 1
     vihollinen.hp -= vahinko_arvo
+    if vihollinen.hp < 0:
+        vihollinen.hp = 0
     palautettava_teksti = f'Tulipallo käristi {vahinko_arvo} elämäpistettä viholliselta'
     return palautettava_teksti
 
@@ -773,8 +785,11 @@ def tulipallo(pelaaja, vihollinen):
 # PÄÄOHJELMA:
 
 # Pelin alustus
-# winsound.PlaySound('adventure.wav', winsound.SND_LOOP | winsound.SND_ASYNC | winsound.SND_FILENAME)
+pygame.mixer.init()
+pygame.mixer.Channel(0).set_volume(0.05)
+pygame.mixer.Channel(0).play(pygame.mixer.Sound('mainmenu_theme.wav'), -1)
 pelaaja = paavalikko()
+pygame.mixer.Channel(0).play(pygame.mixer.Sound('the-virgin-medieval-music-4238.wav'), -1)
 nykyinen_sijainti = pelaajan_sijainti(pelaaja.id)
 inventaario = esineiden_haku(pelaaja)
 taidot = taito_haku(pelaaja)
@@ -819,17 +834,17 @@ while True:
         haluatko_nukkua(pelaaja)
 
     if pelaaja.sijainti == 10 and pelaaja.onko_sormus == 1:
-        # boss fight tähän
+        # final boss fight tähän
 
-        print(f'Olet saapunut tulivuoren huipulle. Allasi hehkuu valtava laavameri.'
-              f'Pitelet sormusta kädessäsi, valmiina heittämään sen tulivuoreen...'
-              f'Yhtäkkiä sormus alkaa polttaa kädessäsi ja se putoaa jalkoihisi. '
-              f'Näät kuinka sormus alkaa hehkua'
-              f'Sormus ottaa pahan {punainen}Dracula Vladin{vari_reset} muodon.')
+        print(f'Olet saapunut tulivuoren huipulle. Allasi hehkuu valtava laavameri.\n'
+              f'Pitelet sormusta kädessäsi, valmiina heittämään sen tulivuoreen...\n'
+              f'Yhtäkkiä sormus alkaa polttaa kädessäsi ja se putoaa jalkoihisi.\n'
+              f'Näät kuinka sormus alkaa hehkua ja alkaa sen ympärille myodustumaan valtava musta savupilvi\n'
+              f'Savupilvestä astuu ulos sormuksen kuolleen haltijan {punainen}Gorgonin{vari_reset} henki.\n')
 
-        print('')
-        print(f'{punainen}Dracula Vlad: "Maailma on minun. Valmistaudu kuolemaan."')
+        print(f'{punainen}Gorgon: "Maailma on MINUN! Valmistaudu KUOLEMAAN!"')
         input(f'{keltainen}Paina Enter aloittaaksesi viimeinen taistelu...{vari_reset}')
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('skjaldmr-norse-viking-background-music-110364(1).wav'), -1)
 
         if taistelu(pelaaja, hae_bossi()) == True:
 
@@ -840,6 +855,7 @@ while True:
 
                 if lopetus == '1' or lopetus == '2':
                     break
+
                 else:
                     print(f'Tee valinta! {vihrea}(1){vari_reset} tai {punainen}(2){vari_reset}:\n')
 
@@ -848,20 +864,23 @@ while True:
                       f'Hetken sormus pysyy pinnalla, mutta nopeasti se sulaa ja uppoaa laavaan.\n'
                       f'Päästät huokauksen helpotuksesta ja katsot ylös kuinka taivas kirkastuu.\n'
                       f'Sormuksen vaikutus alkaa jo pikkuhiljaa hiipua maailmasta.\n'
-                      f'Uutinen teostasi kulkee läpi maailman nopeasti, sinusta on tuleva legenda! Maailman väki HURRAA sankaruudellesi!\n')
+                      f'Uutinen teostasi kulkee läpi maailman nopeasti ja sinusta on tuleva legenda! Maailman väki HURRAA sankaruudellesi!\n')
                 print(f'Onneksi olkoon! Seikkailusi kesti {keltainen}{pelaaja.menneet_paivat}{vari_reset} päivää.\n')
+                input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
 
             if lopetus == '2':
+                pygame.mixer.Channel(0).play(pygame.mixer.Sound('medieval-horror-music-theme-2916.wav'))
                 print('Katsot sormusta ja alla hehkuvaa laavamerta. Sormus tarjoaa käyttäjälleen voimaa ja valtaa.\n'
                       'Se houkuttelee sinua ja antaudut sen valtaan.\n'
                       'Laitat sormuksen sormeen ja tunnet kuinka voima alkaa kasvaa sisälläsi.\n'
                       'Mielestäsi sinun tulisi ohjata maailmaa, vai onko se sormuksen vaikutus sinuun\n'
                       'Sormuksen vaikutus maailmaan kasvaa ja uudet kätyrit nousevat sinun komennettavaksi\n'
-                      'Uutinen teostasi kulkee läpi maailman nopeasti, Maailman väki on kauhuissaan mitä on tulevaksi.\n')
-                print(f'Onneksi olkoon! Seikkailusi kesti {keltainen}{pelaaja.menneet_paivat}{vari_reset} päivää.')
+                      'Uutinen teostasi kulkee läpi maailman nopeasti. Maailman väki on kauhuissaan siitä mitä on luvassa kun uusi sormuksen haltija laskeutuu tulivuoren huipulta.\n')
+                print(f'Onneksi olkoon! Maailma on armoillasi! Seikkailusi kesti {keltainen}{pelaaja.menneet_paivat}{vari_reset} päivää.\n')
+                input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
 
         else:
-            print(f'Olet epäonnistunut.')
+            print(f'Olet epäonnistunut. Gorgon ottaa ruumiisi haltuun. Nyt uudella vartalolla hän on vahvempi kuin koskaan ja maailma on hänen armossaan taas.')
             print(f'Seikkailusi kesti {keltainen}{pelaaja.menneet_paivat}{vari_reset} päivää.')
 
     # tallennus taistelun jälkeen
