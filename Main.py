@@ -24,7 +24,7 @@ vari_reset = Style.RESET_ALL
 # TIETOKANNAN ASETUKSET:
 
 tietokanta = {'user': 'root',
-              'password': 'h93cx3et',
+              'password': '2244',
               'host': '127.0.0.1',
               'database': 'pahuksen_sormus',
               'raise_on_warnings': True,
@@ -83,10 +83,10 @@ class Vihollinen:
 
 def alkusanat():
 
-    print('Tämä peli on luotu käyttäen hiilineutraalia sähköä. \n'
-    'Pelissä sinulle annetaan vaihtoehtoja, jotka valitaan tietyllä numeronäppäimellä. \n'
-    'tai kirjaimella Y/N. \n'
-    'Paina numeronäppäintä ja sen jälkeen enteriä. \n'
+    print('\n'
+    'Tämä peli on luotu käyttäen hiilineutraalia sähköä. \n'
+    'Pelissä sinulle annetaan vaihtoehtoja, jotka valitaan tietyllä numeronäppäimellä tai kirjaimella Y/N. \n'
+    'Paina näppäintä ja sen jälkeen enteriä. \n'
     'Paina enter jatkaaksesi. \n')
 
 
@@ -830,6 +830,9 @@ def tulipallo(pelaaja, vihollinen):
 
 # PÄÄOHJELMA:
 
+#Alkusanat
+alkusanat()
+
 # Pelin alustus
 for x in open(file="tekstitiedostot/lopputekstit.txt"):
     print(f"{keltainen}{x}{vari_reset}", end="")
@@ -844,9 +847,6 @@ inventaario = esineiden_haku(pelaaja)
 taidot = taito_haku(pelaaja)
 
 peli_lapi = False
-
-
-alkusanat()
 
 
 # Peli käynnissä
