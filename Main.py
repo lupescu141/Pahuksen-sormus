@@ -484,6 +484,7 @@ def sijainti_valitsin(pelaaja):
     print(f'\nOlet kohteessa {vihrea}{nykyinen_sijainti["fantasia_nimi"]}{vari_reset}\n'
           f"Seikkailuun on kulunut: {keltainen}{pelaaja.menneet_paivat}{vari_reset} päivää\n")
 
+
     while True:
 
         valinta = input('Mihin kohteeseen haluat matkustaa? Kirjoita numero: ')
@@ -499,7 +500,8 @@ def sijainti_valitsin(pelaaja):
 
         else:
             print('Virheellinen kohde.')
-    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/going-on-a-forest-road-gravel-and-grass-6404.wav'), 1, 2400)
+
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/going-on-a-forest-road-gravel-and-grass-6404.wav'), 0, 2400)
     return valinta
 
 
@@ -834,18 +836,18 @@ def tulipallo(pelaaja, vihollinen):
 alkusanat()
 
 # Pelin alustus
-for x in open(file="tekstitiedostot/lopputekstit.txt"):
-    print(f"{keltainen}{x}{vari_reset}", end="")
+
+#Ääni asetukset
 pygame.mixer.init()
 pygame.mixer.Channel(0).set_volume(0.05)
 pygame.mixer.Channel(0).set_volume(0.1)
+
 pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/mainmenu_theme.wav'), -1)
 pelaaja = paavalikko()
 pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/the-virgin-medieval-music-4238.wav'), -1)
 nykyinen_sijainti = pelaajan_sijainti(pelaaja.id)
 inventaario = esineiden_haku(pelaaja)
 taidot = taito_haku(pelaaja)
-
 peli_lapi = False
 
 
@@ -853,6 +855,9 @@ peli_lapi = False
 taustatarina()
 
 while peli_lapi == False:
+
+    if pelaaja.sijainti == 1:
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/medieval_village_atmosphere-79282.wav'), -1,)
 
     # Pelaaja valitsee minne haluaa matkustaa
     valinta = int(sijainti_valitsin(pelaaja))
