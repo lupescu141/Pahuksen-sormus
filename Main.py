@@ -395,9 +395,20 @@ def perus_isku(pelaaja, vihollinen):
             isku = random.randint(1, pelaaja.isku) + 2
             vihollinen.hp = int(vihollinen.hp) - isku
             loki_printtaus1 = f'Teit {isku} vahinkoa!'
+            random_aani= random.randint(1,3)
+
+            if random_aani == 1:
+                pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/samurai-slash-6845.wav'))
+
+            elif random_aani == 2:
+                pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/slash-21834.wav'))
+
+            elif random_aani == 3:
+                pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/sword-hit-7160.wav'))
 
         else:
             loki_printtaus1 = 'Vihollinen väisti iskusi.'
+            pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/swing-whoosh-110410.wav'))
 
     else:
         loki_printtaus1 = 'Olet kuollut.'
@@ -420,9 +431,13 @@ def perus_isku_vihollinen(vihollinen, pelaaja):
                 pelaaja.hp = 0
 
             loki_printtaus2 = f'Vihollinen teki {isku} vahinkoa!'
+            time.sleep(0.2)
+            pygame.mixer.Channel(2).play(pygame.mixer.Sound('aanet/male_hurt7-48124.wav'))
 
         else:
             loki_printtaus2 = f'Väistit vihollisen iskun!'
+            time.sleep(0.2)
+            pygame.mixer.Channel(2).play(pygame.mixer.Sound('aanet/swing-whoosh-110410.wav'))
 
     else:
         loki_printtaus2 = f'Vihollinen kuoli!'
@@ -474,7 +489,7 @@ def sijainti_valitsin(pelaaja):
 
         else:
             print('Virheellinen kohde.')
-
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/going-on-a-forest-road-gravel-and-grass-6404.wav'), 1, 2400)
     return valinta
 
 
@@ -532,6 +547,7 @@ def taistelu(pelaaja, vihollinen):
               f" |{'_'*15}|{'_'*17}|{'_'*15}|{'_'*50}|\n")
 
         if pelaaja.hp <= 0:
+            pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/male-death-sound-128357.wav'))
             break
 
         if vihollinen.hp <= 0:
@@ -766,6 +782,12 @@ def eliksiiri(pelaaja):
         pelaaja.hp += 1
         parannettu_maara += 1
 
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/085594_potion-35983.wav'))
+    time.sleep(0.2)
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/bottle_open-99732.wav'), 0, 910)
+    time.sleep(0.9)
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/heavy_swallowwav-14682.wav'))
+    time.sleep(0.3)
     palautettava_teksti = f'Eliksiiri paransi {parannettu_maara} elämä pistettä'
     return palautettava_teksti
 
@@ -779,6 +801,7 @@ def tulipallo(pelaaja, vihollinen):
     if vihollinen.hp < 0:
         vihollinen.hp = 0
     palautettava_teksti = f'Tulipallo käristi {vahinko_arvo} elämäpistettä viholliselta'
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/fire-magic-6947.wav'))
     return palautettava_teksti
 
 
@@ -787,9 +810,10 @@ def tulipallo(pelaaja, vihollinen):
 # Pelin alustus
 pygame.mixer.init()
 pygame.mixer.Channel(0).set_volume(0.05)
-pygame.mixer.Channel(0).play(pygame.mixer.Sound('mainmenu_theme.wav'), -1)
+pygame.mixer.Channel(0).set_volume(0.1)
+pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/mainmenu_theme.wav'), -1)
 pelaaja = paavalikko()
-pygame.mixer.Channel(0).play(pygame.mixer.Sound('the-virgin-medieval-music-4238.wav'), -1)
+pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/the-virgin-medieval-music-4238.wav'), -1)
 nykyinen_sijainti = pelaajan_sijainti(pelaaja.id)
 inventaario = esineiden_haku(pelaaja)
 taidot = taito_haku(pelaaja)
@@ -844,7 +868,7 @@ while True:
 
         print(f'{punainen}Gorgon: "Maailma on MINUN! Valmistaudu KUOLEMAAN!"')
         input(f'{keltainen}Paina Enter aloittaaksesi viimeinen taistelu...{vari_reset}')
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('skjaldmr-norse-viking-background-music-110364(1).wav'), -1)
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/skjaldmr-norse-viking-background-music-110364(1).wav'), -1)
 
         if taistelu(pelaaja, hae_bossi()) == True:
 
@@ -869,7 +893,7 @@ while True:
                 input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
 
             if lopetus == '2':
-                pygame.mixer.Channel(0).play(pygame.mixer.Sound('medieval-horror-music-theme-2916.wav'))
+                pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/medieval-horror-music-theme-2916.wav'))
                 print('Katsot sormusta ja alla hehkuvaa laavamerta. Sormus tarjoaa käyttäjälleen voimaa ja valtaa.\n'
                       'Se houkuttelee sinua ja antaudut sen valtaan.\n'
                       'Laitat sormuksen sormeen ja tunnet kuinka voima alkaa kasvaa sisälläsi.\n'
