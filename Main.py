@@ -11,6 +11,7 @@ import sys
 import time
 import pygame
 
+import Lopputekstit
 
 # TEKSTIVÄRIT:
 punainen = colorama.Fore.LIGHTRED_EX
@@ -53,7 +54,8 @@ else:
 # OLIOT:
 class Pelaaja:
     def __init__(self, peli_id, pelaaja_nimi, pelaaja_sijainti, menneet_paivat, pelaaja_hp, pelaaja_maxhp,
-                 pelaaja_suojaus, pelaaja_isku, pelaaja_taitopiste, pelaaja_max_taitopiste, onko_sormus, sormus_sijainti):
+                 pelaaja_suojaus, pelaaja_isku, pelaaja_taitopiste, pelaaja_max_taitopiste,
+                 onko_sormus, sormus_sijainti):
         self.id = peli_id
         self.nimi = pelaaja_nimi
         self.sijainti = pelaaja_sijainti
@@ -79,6 +81,15 @@ class Vihollinen:
 
 
 # FUNKTIOT:
+
+def alkusanat():
+
+    print('Tämä peli on luotu käyttäen hiilineutraalia sähköä. \n'
+    'Pelissä sinulle annetaan vaihtoehtoja, jotka valitaan tietyllä numeronäppäimellä. \n'
+    'tai kirjaimella Y/N. \n'
+    'Paina numeronäppäintä ja sen jälkeen enteriä. \n'
+    'Paina enter jatkaaksesi. \n')
+
 
 def esineiden_haku(pelaaja):
 
@@ -207,7 +218,7 @@ def luo_peli():
     while True:
         nimi = input('Anna hahmollesi nimi: ')
 
-        if len(nimi) < 1:
+        if len(nimi) < 2:
             print('Et voi antaa tyhjää nimeä.')
 
         elif len(nimi) > 12:
@@ -278,19 +289,19 @@ def paavalikko():
         tallennetut_pelit = kursori.fetchall()
 
         # Hakee paavalikkoTeksti.txt tiedoston ja tulostaa visuaalisen tekstin
-        for x in open(file="paavalikkoTeksti.txt"):
+        for x in open(file="tekstitiedostot/paavalikkoTeksti.txt"):
             print(f"        {punainen}{x}{vari_reset}", end="")
 
         # Hakee uusi_peli.txt tiedoston ja tulostaa  visuaalisen tekstin
-        for x in open(file="uusi_peli.txt"):
+        for x in open(file="tekstitiedostot/uusi_peli.txt"):
             print(f"        {vihrea}{x}{vari_reset}", end="")
 
         # Hakee txt tiedoston ja tulostaa päävalikon visuaalisen tekstin
-        for x in open(file="lataa_peli.txt"):
+        for x in open(file="tekstitiedostot/lataa_peli.txt"):
             print(f"        {keltainen}{x}{vari_reset}", end="")
 
         # Hakee txt tiedoston ja tulostaa päävalikon visuaalisen tekstin
-        for x in open(file="poistu.txt"):
+        for x in open(file="tekstitiedostot/poistu.txt"):
             print(f"        {punainen}{x}{vari_reset}", end="")
 
         valinta = input()
@@ -585,8 +596,8 @@ def taistelu(pelaaja, vihollinen):
                 print(f"  {'_'*100}\n"
                       f" |{keltainen}{'TAIDOT!':^49}{vari_reset}|{keltainen}{'TAISTELU LOKI':^50}{vari_reset}|\n",
                       f"|{'_'*49}|{'_'*50}|\n",
-                      f"|{vihrea}{pelaaja.nimi:^15}{vari_reset}|{keltainen}{' (1)':<4}{vari_reset}{syaani}{taito1:^13}{vari_reset}|{vihrea}{vihollinen.nimi:^15}{vari_reset}|{loki_txt1:50}|\n",
-                      f"|{punainen}{pelaaja_hp:^15}{vari_reset}|{keltainen}{' (2)':<4}{vari_reset}{syaani}{taito2:^13}{vari_reset}|{punainen}{vihollinen_hp:^15}{vari_reset}|{loki_txt2:50}|\n",
+                      f"|{vihrea}{pelaaja.nimi:^15}{vari_reset}|{keltainen}{' (1)':<4}{vari_reset}{syaani}{taito1:^13}{vari_reset}|{vihrea}{vihollinen.nimi:^15}{vari_reset}|{keltainen}{loki_txt1:50}{vari_reset}|\n",
+                      f"|{punainen}{pelaaja_hp:^15}{vari_reset}|{keltainen}{' (2)':<4}{vari_reset}{syaani}{taito2:^13}{vari_reset}|{punainen}{vihollinen_hp:^15}{vari_reset}|{keltainen}{loki_txt2:50}{vari_reset}|\n",
                       f"|{magenta}{pelaaja_tp:^15}{vari_reset}|{keltainen}{' (3)':<4}{vari_reset}{syaani}{taito3:^13}{vari_reset}|{'':15}|{'':50}|\n"
                       f" |{'':15}|{keltainen}{' (4)':<4}{'Takaisin':^13}{vari_reset}|{'':15}|{'':50}|\n"
                       f" |{'_' * 15}|{'_' * 17}|{'_' * 15}|{'_'*50}|\n")
@@ -808,6 +819,8 @@ def tulipallo(pelaaja, vihollinen):
 # PÄÄOHJELMA:
 
 # Pelin alustus
+for x in open(file="tekstitiedostot/lopputekstit.txt"):
+    print(f"{keltainen}{x}{vari_reset}", end="")
 pygame.mixer.init()
 pygame.mixer.Channel(0).set_volume(0.05)
 pygame.mixer.Channel(0).set_volume(0.1)
@@ -884,16 +897,22 @@ while True:
                     print(f'Tee valinta! {vihrea}(1){vari_reset} tai {punainen}(2){vari_reset}:\n')
 
             if lopetus == '1':
+                # Tausta_musiikki vaihtuu
+                pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/mainmenu_theme.wav'))
+
                 print(f'Heität sormuksen tulivuoreen ja näät kuinka se laskeutuu hehkuvaan laavamereen.\n'
                       f'Hetken sormus pysyy pinnalla, mutta nopeasti se sulaa ja uppoaa laavaan.\n'
                       f'Päästät huokauksen helpotuksesta ja katsot ylös kuinka taivas kirkastuu.\n'
                       f'Sormuksen vaikutus alkaa jo pikkuhiljaa hiipua maailmasta.\n'
-                      f'Uutinen teostasi kulkee läpi maailman nopeasti ja sinusta on tuleva legenda! Maailman väki HURRAA sankaruudellesi!\n')
+                      f'Uutinen teostasi kulkee läpi maailman nopeasti ja sinusta on tuleva LEGENDA! Maailman väki HURRAA sankaruudellesi!\n')
                 print(f'Onneksi olkoon! Seikkailusi kesti {keltainen}{pelaaja.menneet_paivat}{vari_reset} päivää.\n')
                 input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
 
             if lopetus == '2':
+
+                # Tausta_musiikki vaihtuu
                 pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/medieval-horror-music-theme-2916.wav'))
+
                 print('Katsot sormusta ja alla hehkuvaa laavamerta. Sormus tarjoaa käyttäjälleen voimaa ja valtaa.\n'
                       'Se houkuttelee sinua ja antaudut sen valtaan.\n'
                       'Laitat sormuksen sormeen ja tunnet kuinka voima alkaa kasvaa sisälläsi.\n'
