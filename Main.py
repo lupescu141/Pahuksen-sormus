@@ -746,8 +746,21 @@ def tallennus(pelaaja, inventaario):
         kursori = yhteys.cursor(dictionary=True)
         kursori.execute(sql)
 
-    print(f'\nPeli tallennettu\n')
+    print(f'{keltainen}\nPeli tallennettu\n{vari_reset}')
     return
+
+
+def tallennuksen_poisto(pelaaja):
+
+    sql = (f'''INSERT INTO pisteet (id, nimi, paivat) VALUES ("{int(pelaaja.id)}", "{str(pelaaja.nimi)}", "{int(pelaaja.menneet_paivat)}")''')
+    kursori = yhteys.cursor()
+    kursori.execute(sql)
+
+    sql = (f'DELETE FROM inventaario WHERE pelaajan_id = "{int(pelaaja.id)}";')
+    kursori.execute(sql)
+    sql = (f'DELETE FROM peli WHERE peli_id = "{int(pelaaja.id)}";')
+    kursori.execute(sql)
+    print(f'{keltainen}Tallennuksesi on poistettu ja suorituksesti on lisätty piste tauluun.{vari_reset}')
 
 
 # Tulostaa taustatarinan, jos käyttäjä syöttää halutun kirjaimen
@@ -831,6 +844,8 @@ nykyinen_sijainti = pelaajan_sijainti(pelaaja.id)
 inventaario = esineiden_haku(pelaaja)
 taidot = taito_haku(pelaaja)
 
+peli_lapi = False
+
 
 alkusanat()
 
@@ -838,7 +853,7 @@ alkusanat()
 # Peli käynnissä
 taustatarina()
 
-while True:
+while peli_lapi == False:
 
     # Pelaaja valitsee minne haluaa matkustaa
     valinta = int(sijainti_valitsin(pelaaja))
@@ -909,7 +924,7 @@ while True:
                       f'Sormuksen vaikutus alkaa jo pikkuhiljaa hiipua maailmasta.\n'
                       f'Uutinen teostasi kulkee läpi maailman nopeasti ja sinusta on tuleva LEGENDA! Maailman väki HURRAA sankaruudellesi!\n')
                 print(f'Onneksi olkoon! Seikkailusi kesti {keltainen}{pelaaja.menneet_paivat}{vari_reset} päivää.\n')
-                input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
+                peli_lapi = True
 
             if lopetus == '2':
 
@@ -923,13 +938,21 @@ while True:
                       'Sormuksen vaikutus maailmaan kasvaa ja uudet kätyrit nousevat sinun komennettavaksi\n'
                       'Uutinen teostasi kulkee läpi maailman nopeasti. Maailman väki on kauhuissaan siitä mitä on luvassa kun uusi sormuksen haltija laskeutuu tulivuoren huipulta.\n')
                 print(f'Onneksi olkoon! Maailma on armoillasi! Seikkailusi kesti {keltainen}{pelaaja.menneet_paivat}{vari_reset} päivää.\n')
-                input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
+                peli_lapi = True
 
         else:
             print(f'Olet epäonnistunut. Gorgon ottaa ruumiisi haltuun. Nyt uudella vartalolla hän on vahvempi kuin koskaan ja maailma on hänen armossaan taas.')
             print(f'Seikkailusi kesti {keltainen}{pelaaja.menneet_paivat}{vari_reset} päivää.')
+            peli_lapi = True
 
     # tallennus taistelun jälkeen
     tallennus(pelaaja, inventaario)
 
-# Peli loppuu'
+    # Peli loppuu'
+    if peli_lapi == True:
+        tallennuksen_poisto(pelaaja)
+        input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
+
+        for x in open(file="tekstitiedostot/lopputekstit.txt"):
+            print(f"{keltainen}{x}{vari_reset}", end="")
+
