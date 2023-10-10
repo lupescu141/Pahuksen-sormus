@@ -11,7 +11,6 @@ import sys
 import time
 import pygame
 
-import Lopputekstit
 
 # TEKSTIVÄRIT:
 punainen = colorama.Fore.LIGHTRED_EX
