@@ -832,6 +832,9 @@ inventaario = esineiden_haku(pelaaja)
 taidot = taito_haku(pelaaja)
 
 
+alkusanat()
+
+
 # Peli käynnissä
 taustatarina()
 
