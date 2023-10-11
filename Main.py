@@ -196,11 +196,11 @@ def hae_bossi():
 
 def km_to_day(matka):
 
-    if matka < 50:
+    if matka < 75:
         aika = 1
         return aika
 
-    elif matka < 100:
+    elif matka < 125:
         aika = 2
         return aika
 
@@ -216,8 +216,26 @@ def km_to_day(matka):
 # Lisää uuden rivin peli-tauluun eli luo uuden tallennuksen ja palauttaa tämän hetkisen tallennuksen id-arvon.
 def luo_peli():
 
+    sql = f'SELECT pelaaja_nimi FROM peli;'
+    kursori = yhteys.cursor(dictionary=True)
+    kursori.execute(sql)
+    pelaajat = kursori.fetchall()
+
+
+
     while True:
         nimi = input('Anna hahmollesi nimi: ')
+
+        varattu = False
+
+        for kayttaja in pelaajat:
+
+            if nimi.upper() == str(kayttaja["pelaaja_nimi"]).upper():
+                varattu = True
+
+        if varattu == True:
+
+            print('Käyttäjänimi on varattu')
 
         elif len(nimi) < 2:
 
@@ -283,6 +301,24 @@ def lataa_peli(tallennetut_pelit):
     return valinta
 
 
+# Tarkastaa onko pelaajan sijainnissa sormus ja paluttaa arvon True tai False
+def onko_kohteessa_sormus(pelaaja):
+
+    if pelaaja.onko_sormus == 0:
+
+        if int(pelaaja.sijainti) == int(pelaaja.sormus_sijainti):
+
+            print(f'{vihrea}Löysit sormuksen!!{vari_reset}\n\n')
+            pelaaja.onko_sormus = 1
+            input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}')
+            return True
+
+        else:
+            print(f'{punainen}Kohteessa ei ole sormusta{vari_reset}\n')
+            input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
+            return False
+
+
 def paavalikko():
 
     # Ottaa vastaan käyttäjän näppäinpainalluksen ja toteuttaa sen perusteella tietyn funktion
@@ -338,27 +374,12 @@ def paavalikko():
             poistu()
             break
 
+        if valinta == "4":
+            pisteet()
+            continue
+
     return pelaaja
 
-
-# Tarkastaa onko pelaajan sijainnissa sormus ja paluttaa arvon True tai False
-def onko_kohteessa_sormus(pelaaja):
-
-    if pelaaja.onko_sormus == 0:
-
-        if int(pelaaja.sijainti) == int(pelaaja.sormus_sijainti):
-
-            print(f'{vihrea}Löysit sormuksen!!{vari_reset}')
-            pelaaja.onko_sormus = 1
-            print('')
-            input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}')
-            return True
-
-        else:
-            print(f'{punainen}Kohteessa ei ole sormusta{vari_reset}')
-            print('')
-            input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}')
-            return False
 
 
 def paivien_lisaaja(haluttu_kohde_id, pelaaja):
@@ -373,6 +394,23 @@ def paivien_lisaaja(haluttu_kohde_id, pelaaja):
     matka = distance.distance(alku_koordinaatit, loppu_koordinaatit).km
 
     return km_to_day(matka)
+
+
+#hakee pisteet
+def pisteet():
+    sql = f'''SELECT nimi, paivat FROM pisteet ORDER BY (paivat) LIMIT 10;'''
+    kursori = yhteys.cursor(dictionary=True)
+    kursori.execute(sql)
+    top = kursori.fetchall()
+
+    print(f'{keltainen}{"TOP 10":^34}{vari_reset}\n')
+    i = 1
+    for sankari in top:
+        print(f'{i:2} {vihrea}{sankari["nimi"]:14}{vari_reset}{syaani}{sankari["paivat"]:<8}{vari_reset}{keltainen}päivää{vari_reset}')
+        i = i + 1
+    print('')
+    input(f'{keltainen}Paina Enter palataksesi valikkoon...{vari_reset}\n')
+
 
 
 # Sulkee ohjelman
@@ -475,12 +513,12 @@ def sijainti_valitsin(pelaaja):
         alku_koordinaatit = nykyinen_sijainti['latitude_deg'], nykyinen_sijainti['longitude_deg']
         matka = distance.distance(alku_koordinaatit, loppu_koordinaatit).km
 
-        if matka < 50:
-            print(f"{kohde['id']:2}. Kohteeseen {syaani}{kohde['fantasia_nimi']:28}{vari_reset} {keltainen}{km_to_day(matka)}{vari_reset} päivän matkustus.")
+        if matka < 75:
+            print(f"{keltainen}{kohde['id']:2}{vari_reset}. Kohteeseen {syaani}{kohde['fantasia_nimi']:28}{vari_reset} {punainen}{km_to_day(matka)}{vari_reset} päivän matkustus.")
             id_lista.append(kohde['id'])
 
-        elif matka < 100:
-            print(f"{kohde['id']:2}. Kohteeseen {syaani}{kohde['fantasia_nimi']:28}{vari_reset} {keltainen}{km_to_day(matka)}{vari_reset} päivän matkustus.")
+        elif matka < 125:
+            print(f"{keltainen}{kohde['id']:2}{vari_reset}. Kohteeseen {syaani}{kohde['fantasia_nimi']:28}{vari_reset} {punainen}{km_to_day(matka)}{vari_reset} päivän matkustus.")
             id_lista.append(kohde['id'])
 
         elif matka < 200:
@@ -768,7 +806,7 @@ def tallennus(pelaaja, inventaario):
     return
 
 
-def tallennuksen_poisto(pelaaja):
+def tallennuksen_poisto_ja_pisteet(pelaaja):
 
     sql = (f'''INSERT INTO pisteet (id, nimi, paivat) VALUES ("{int(pelaaja.id)}", "{str(pelaaja.nimi)}", "{int(pelaaja.menneet_paivat)}")''')
     kursori = yhteys.cursor()
@@ -902,18 +940,33 @@ while peli_lapi == False:
             if len(inventaario) <= 3:
                 esineen_arvonta(inventaario)
 
+            pelaaja.menneet_paivat += paivien_lisaaja(valinta, pelaaja)
+
+            # Päivitetään pelaajan sijainti taistelun jälkeen
+            pelaaja.sijainti = int(valinta)
+            vaihtaa_aanet(pelaaja)
+
         else:
-            print(f'{punainen}Sinä kuolit.{vari_reset}')
+            print(f'{punainen}Sinä kuolit. Tallennuksesi on poistettu{vari_reset}')
+            kuolema_pelin_poisto(pelaaja)
+            break
 
-    # Katsotaan kuoliko pelaaja
-    if pelaaja.hp <= 0:
-        print('Sinä kuolit.')
-        break
+    else:
 
-    paivien_lisaaja(valinta, pelaaja)
+        pelaaja.menneet_paivat += paivien_lisaaja(valinta, pelaaja)
 
-    # Päivitetään pelaajan sijainti taistelun jälkeen
-    pelaaja.sijainti = int(valinta)
+        # Päivitetään pelaajan sijainti taistelun jälkeen
+        pelaaja.sijainti = int(valinta)
+        vaihtaa_aanet(pelaaja)
+        event_valitsin(pelaaja)
+        print('')
+        input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}')
+
+        # Katsotaan kuoliko pelaaja
+        if pelaaja.hp <= 0:
+            print('Sinä kuolit.')
+            kuolema_pelin_poisto(pelaaja)
+            break
 
     nykyinen_sijainti = pelaajan_sijainti_tiedot_haku(pelaaja)
 
@@ -979,16 +1032,18 @@ while peli_lapi == False:
         else:
             print(f'Olet epäonnistunut. Gorgon ottaa ruumiisi haltuun. Nyt uudella vartalolla hän on vahvempi kuin koskaan ja maailma on hänen armossaan taas.')
             print(f'Seikkailusi kesti {keltainen}{pelaaja.menneet_paivat}{vari_reset} päivää.')
-            peli_lapi = True
+
+            kuolema_pelin_poisto(pelaaja)
+            break
 
     # tallennus taistelun jälkeen
     tallennus(pelaaja, inventaario)
 
     # Peli loppuu'
     if peli_lapi == True:
-        tallennuksen_poisto(pelaaja)
+        tallennuksen_poisto_ja_pisteet(pelaaja)
         input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
 
         for x in open(file="tekstitiedostot/lopputekstit.txt"):
             print(f"{keltainen}{x}{vari_reset}", end="")
-
+            break
