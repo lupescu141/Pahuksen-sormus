@@ -138,8 +138,18 @@ def esineen_arvonta(inventaario):
 
 def haluatko_nukkua(pelaaja):
 
-    valinta = input(f'Haluatko levätä yhden päivän ja palauttaa {punainen}HP{vari_reset} ja {magenta}TP{vari_reset} täysille? {keltainen}Y/N{vari_reset}\n')
+    pelaaja_hp = 'HP: ' + str(pelaaja.hp) + '/' + str(pelaaja.maxhp)
+    pelaaja_tp = 'TP: ' + str(pelaaja.taitopiste) + '/' + str(pelaaja.max_taitopiste)
+    viiva = '_'
     while True:
+
+        print(f"{viiva * 17}\n"
+              f"|{vihrea}{pelaaja.nimi:^15}{vari_reset}|\n"
+              f"|{punainen}{pelaaja_hp:^15}{vari_reset}|\n"
+              f"|{magenta}{pelaaja_tp:^15}{vari_reset}|\n"
+              f"|{viiva * 15}|\n\n")
+
+        valinta = input(f'Haluatko levätä yhden päivän ja palauttaa {punainen}HP{vari_reset} ja {magenta}TP{vari_reset} täysille? {keltainen}Y/N{vari_reset}\n')
 
         if valinta.upper() != 'Y' and valinta.upper() != 'N':
 
@@ -331,7 +341,7 @@ def paavalikko():
 
         # Hakee paavalikkoTeksti.txt tiedoston ja tulostaa visuaalisen tekstin
         for x in open(file="tekstitiedostot/paavalikkoTeksti.txt"):
-            print(f"        {punainen}{x}{vari_reset}", end="")
+            print(f"        {magenta}{x}{vari_reset}", end="")
 
         # Hakee uusi_peli.txt tiedoston ja tulostaa  visuaalisen tekstin
         for x in open(file="tekstitiedostot/uusi_peli.txt"):
@@ -344,7 +354,7 @@ def paavalikko():
         # Hakee txt tiedoston ja tulostaa päävalikon visuaalisen tekstin
         for x in open(file="tekstitiedostot/pisteet.txt"
                            ""):
-            print(f"        {punainen}{x}{vari_reset}", end="")
+            print(f"        {syaani}{x}{vari_reset}", end="")
 
         # Hakee txt tiedoston ja tulostaa päävalikon visuaalisen tekstin
         for x in open(file="tekstitiedostot/poistu.txt"):
@@ -371,12 +381,11 @@ def paavalikko():
             break
 
         if valinta == "3":
-            poistu()
-            break
-
-        if valinta == "4":
             pisteet()
             continue
+
+        if valinta == "4":
+            poistu()
 
     return pelaaja
 
@@ -596,6 +605,7 @@ def taistelu(pelaaja, vihollinen):
     loki_txt1 = ''
     loki_txt2 = ''
     loki_txt3 = ''
+
 
     while True:
 
@@ -831,20 +841,22 @@ def kuolema_pelin_poisto(pelaaja):
 # Tulostaa taustatarinan, jos käyttäjä syöttää halutun kirjaimen
 def taustatarina():
 
-    yn = input(f'Haluatko lukea taustatarinan ja ohjeet? {keltainen}Y/N{vari_reset}\n')
+    while True:
+        yn = input(f'Haluatko lukea taustatarinan ja ohjeet?{keltainen}Y/N: {vari_reset}\n')
 
-    if yn.upper() == 'Y':
-        print(f'Pahuus on alkanut saastuttaa maailmaa. Tarujen mukaan kauan sitten {punainen}Dracula Vlad{vari_reset} Viljeli pahuutta maailmaan.\n'
-              'Hänet voi pysäyttää vain legendaarisen pahuksen sormuksen voimalla.')
-        print(f'Tehtäväsi on löytää pahuksen sormus ja viedä se tulivuoreen jossa kohtaat {punainen}Dracula Vladin{vari_reset}.')
-        print('Voit matkustaa kohteisiin valitsemalla niitä edeltävän numeron.')
-        print('Yritä löytää sormus mahdollisimman nopeasti ja viedä se tulivuoreen,\n'
-              'mutta muista, että mitä pidemmälle matkustat, sitä suurempi riski on kohdata Dracula Vladin kätyreitä.\n')
-        print(f'Seikkailusi alkaa kohteesta {vihrea}{nykyinen_sijainti["fantasia_nimi"]}{vari_reset}.\n')
+        if yn.upper() == 'Y':
+            for x in open(file="tekstitiedostot/alkutarina.txt"):
+                print(f"{keltainen}{str(x)}{vari_reset}", end="")
+            input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
+            break
 
-    elif yn.upper() == 'N':
-        print(f'Seikkailusi alkaa kohteesta {vihrea}{nykyinen_sijainti["fantasia_nimi"]}{vari_reset}\n')
-        input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
+        if yn.upper() == 'N':
+            print(f'Seikkailusi alkaa kohteesta {vihrea}{nykyinen_sijainti["fantasia_nimi"]}{vari_reset}\n')
+            input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
+            break
+
+        else:
+            print(f'{punainen}Väärä valinta!{vari_reset}\n\n')
 
 
 # Arpoo tuleeko event ja hakee sen randomilla taulusta
@@ -913,10 +925,10 @@ pygame.mixer.init()
 pygame.mixer.Channel(0).set_volume(0.03)
 pygame.mixer.Channel(1).set_volume(0.2)
 pygame.mixer.Channel(2).set_volume(0.2)
-pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/paavalikko_musiikki.wav'), -1)
 
 # Pelin alustus
 alkusanat()
+pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/paavalikko_musiikki.wav'), -1)
 pelaaja = paavalikko()
 nykyinen_sijainti = pelaajan_sijainti(pelaaja.id)
 inventaario = esineiden_haku(pelaaja)
@@ -1030,7 +1042,7 @@ while peli_lapi == False:
                 peli_lapi = True
 
         else:
-            print(f'Olet epäonnistunut. Gorgon ottaa ruumiisi haltuun. Nyt uudella vartalolla hän on vahvempi kuin koskaan ja maailma on hänen armossaan taas.')
+            print(f'Olet epäonnistunut. Gorgon ottaa kuolleen ruumiisi haltuun. Nyt uudella vartalolla hän on vahvempi kuin koskaan ja maailma on hänen armossaan taas.')
             print(f'Seikkailusi kesti {keltainen}{pelaaja.menneet_paivat}{vari_reset} päivää.')
 
             kuolema_pelin_poisto(pelaaja)
@@ -1046,4 +1058,7 @@ while peli_lapi == False:
 
         for x in open(file="tekstitiedostot/lopputekstit.txt"):
             print(f"{keltainen}{x}{vari_reset}", end="")
-            break
+        input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
+        for x in open(file="aanet/lainatut_aanet.txt"):
+            print(f"                            {keltainen}{x}{vari_reset}", end="")
+        break
