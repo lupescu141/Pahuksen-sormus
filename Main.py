@@ -482,7 +482,7 @@ def perus_isku(pelaaja, vihollinen):
 
     return loki_printtaus1
 
-
+# Viholisen perusisku
 def perus_isku_vihollinen(vihollinen, pelaaja):
 
     if vihollinen.hp > 0:
@@ -511,7 +511,7 @@ def perus_isku_vihollinen(vihollinen, pelaaja):
 
     return loki_printtaus2
 
-
+# Tulostaa pelaajalle kohteet ja etäisyydet. Palauttaa valitun kohteen id:n
 def sijainti_valitsin(pelaaja):
 
     id_lista = []
@@ -584,11 +584,9 @@ def sormus_arpominen(pelaaja):
     sql = f'''UPDATE peli SET sormus_sijainti = {sijainti_id['id']}
               WHERE peli_id = "{pelaaja.id}"'''
     kursori.execute(sql)
-    #print('Testaamisen vuoksi:')
-    #print('sormuksen random sijainti on ' + str(sijainti_id['id']))
     return sijainti_id['id']
 
-
+# Hakee taidot
 def taito_haku(pelaaja):
 
     sql = f'SELECT taito_nimi FROM taidot'
@@ -873,6 +871,7 @@ def tuleeko_event():
 
 # Vaihtaa äänet pelaajan sijainnin perusteella
 def vaihtaa_aanet(pelaaja):
+
     # Vaihtaa musiikin ja taustaäänet pelaajan sijainnin perusteella
     if pelaaja.sijainti == 1:
         pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/uudentoivon-kyla_musiikki.wav'), -1)
@@ -944,34 +943,48 @@ while peli_lapi == False:
     # Pelaaja valitsee minne haluaa matkustaa
     valinta = int(sijainti_valitsin(pelaaja))
 
-    # Arvotaan taistelu etäisyyden perusteella
+    # Arvotaan tuleeko taistelu etäisyyden perusteella
     if taistelu_mahdollisuus_laskuri(paivien_lisaaja(valinta, pelaaja)) == True:
 
+        # Taistelu!
         if taistelu(pelaaja, hae_random_vihollinen()) == True:
 
+            # Tarkistetaan mahtuuko pelaajalle esineitä
             if len(inventaario) <= 3:
+
+                # Arvotaan random esine
                 esineen_arvonta(inventaario)
 
+            # Lisätään pelaaja olioon päivät
             pelaaja.menneet_paivat += paivien_lisaaja(valinta, pelaaja)
 
-            # Päivitetään pelaajan sijainti taistelun jälkeen
+            # Päivitetään pelaaja olion sijainti taistelun jälkeen
             pelaaja.sijainti = int(valinta)
+
+            # Vaihtaa äänet sijainnin perusteella
             vaihtaa_aanet(pelaaja)
 
         else:
+            # Jos pelaaja kuolee taistelussa, poistetaan tallennus
             print(f'{punainen}Sinä kuolit. Tallennuksesi on poistettu{vari_reset}')
             kuolema_pelin_poisto(pelaaja)
             break
 
     else:
-
+        # Jos pelaaja ei joudu taisteluun, lisätään päivät pelaaja olioon
         pelaaja.menneet_paivat += paivien_lisaaja(valinta, pelaaja)
 
         # Päivitetään pelaajan sijainti taistelun jälkeen
         pelaaja.sijainti = int(valinta)
+
+        # Vaihtaa äänet sijainnin perusteella
         vaihtaa_aanet(pelaaja)
+
+        # Hakee eventin kohteen perusteella
         event_valitsin(pelaaja)
         print('')
+
+        # pause
         input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}')
 
         # Katsotaan kuoliko pelaaja
@@ -980,17 +993,18 @@ while peli_lapi == False:
             kuolema_pelin_poisto(pelaaja)
             break
 
+    # Haetaan tiedot nykyisestä sijainnista pelaaja olion sijainnin perusteella
     nykyinen_sijainti = pelaajan_sijainti_tiedot_haku(pelaaja)
 
     # Tarkistaa onko kohteessa sormusta. Jos on se lisää sen pelaajalle
     onko_kohteessa_sormus(pelaaja)
 
-    # Haluaako pelaaja nukkua
+    # Kysytään haluaako pelaaja nukkua, jos pelaaja on menettänyt HP tai TP
     if pelaaja.hp != pelaaja.maxhp or pelaaja.taitopiste != pelaaja.max_taitopiste:
         haluatko_nukkua(pelaaja)
 
+    # Tarkistetaan onko pelaaja tulivuorella ja onko pelaajalla sormus
     if pelaaja.sijainti == 10 and pelaaja.onko_sormus == 1:
-        # final boss fight tähän
 
         print(f'Olet saapunut tulivuoren huipulle. Allasi hehkuu valtava laavameri.\n'
               f'Pitelet sormusta kädessäsi, valmiina heittämään sen tulivuoreen...\n'
@@ -998,23 +1012,30 @@ while peli_lapi == False:
               f'Näät kuinka sormus alkaa hehkua ja alkaa sen ympärille myodustumaan valtava musta savupilvi\n'
               f'Savupilvestä astuu ulos sormuksen kuolleen haltijan {punainen}Gorgonin{vari_reset} henki.\n')
 
-        print(f'{punainen}Gorgon: "Maailma on MINUN! Valmistaudu KUOLEMAAN!"')
+        print(f'{punainen}Gorgon: "Maailma on MINUN! Valmistaudu KUOLEMAAN!"\n')
         input(f'{keltainen}Paina Enter aloittaaksesi viimeinen taistelu...{vari_reset}\n')
+
+        # Bossfight äänet
         pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/gorgon_taistelu.wav'), -1)
 
+        # Tarkistaa viimeisen taistelun tuloksen.
         if taistelu(pelaaja, hae_bossi()) == True:
 
             print(f'Olet päihittänyt sormuksen herran, sinulla on nyt edessäsi elämäsi tärkein valinta...\n')
 
+            # Pelaaja valitsee kahdesta eri lopetuksesta
             while True:
-                lopetus = input(f'Valitse: {keltainen}(1) {vari_reset}{vihrea}Heitä sormus tulivuoreen.{vari_reset} tai {keltainen}(2) {vari_reset}{punainen}Ota haltuun sormuksen voima.{vari_reset}\n')
+                lopetus = input(f'Valitse: {keltainen}(1){vari_reset} {vihrea}Heitä sormus tulivuoreen.{vari_reset} tai {keltainen}(2){vari_reset} {punainen}Ota haltuun sormuksen voima.{vari_reset}\n')
 
+                # Varmistetaan oikea valinta.# Ei hyväksytä virheellistä.
                 if lopetus == '1' or lopetus == '2':
                     break
 
+                # Ei hyväksytä virheellistä.
                 else:
                     print(f'Tee valinta! {vihrea}(1){vari_reset} tai {punainen}(2){vari_reset}:\n')
 
+            # Hyvä lopetus
             if lopetus == '1':
                 # Tausta_musiikki vaihtuu
                 pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/paavalikko_musiikki.wav'))
@@ -1027,6 +1048,7 @@ while peli_lapi == False:
                 print(f'Onneksi olkoon! Seikkailusi kesti {keltainen}{pelaaja.menneet_paivat}{vari_reset} päivää.\n')
                 peli_lapi = True
 
+            # Paha lopetus
             if lopetus == '2':
 
                 # Tausta_musiikki vaihtuu
@@ -1041,21 +1063,24 @@ while peli_lapi == False:
                 print(f'Onneksi olkoon! Maailma on armoillasi! Seikkailusi kesti {keltainen}{pelaaja.menneet_paivat}{vari_reset} päivää.\n')
                 peli_lapi = True
 
+        # Jos pelaaja häviää taistelun
         else:
             print(f'Olet epäonnistunut. Gorgon ottaa kuolleen ruumiisi haltuun. Nyt uudella vartalolla hän on vahvempi kuin koskaan ja maailma on hänen armossaan taas.')
             print(f'Seikkailusi kesti {keltainen}{pelaaja.menneet_paivat}{vari_reset} päivää.')
 
+            # Poistetaan tallennus
             kuolema_pelin_poisto(pelaaja)
             break
 
-    # tallennus taistelun jälkeen
+    # tallennus tietokantaan
     tallennus(pelaaja, inventaario)
 
-    # Peli loppuu'
+    # Jos Gorgon voitetaan pelaajan pisteet tallennetaan pisteet tauluun
     if peli_lapi == True:
         tallennuksen_poisto_ja_pisteet(pelaaja)
         input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
 
+        # Lopputekstit tulee vain jos peli pelataan läpi.
         for x in open(file="tekstitiedostot/lopputekstit.txt"):
             print(f"{keltainen}{x}{vari_reset}", end="")
         input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')

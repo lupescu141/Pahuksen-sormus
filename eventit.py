@@ -119,9 +119,11 @@ def varisrame_event(pelaaja):
                       'Se avautuu kuin itsestään ja tunnet kuinka saat siitä voimaa\n'
                       f'{magenta}Taitopisteeesi{vari_reset} palautuvat täysille!\n')
                 pelaaja.taitopiste = pelaaja.max_taitopiste
+                break
 
             if vaihtoehto == '2':
                 print('Loitsukirja jää makaamaan maahan ja jatkat matkaasi.')
+                break
 
             else:
                 vaihtoehto = input(f'Valitse {vihrea}1{vari_reset}/{punainen}2{vari_reset}: ')
@@ -170,6 +172,7 @@ def sammakkojarvi_event(pelaaja):
 
             if vaihtoehto == '2':
                 print('Päätät olla suutelematta sammakkoa ja jatkat matkaasi.\n')
+                break
 
             else:
                 vaihtoehto = input(f'Valitse {vihrea}1{vari_reset}/{punainen}2{vari_reset}: ')
@@ -213,16 +216,21 @@ def hiisisuo_event(pelaaja):
               'Yhtäkkiä huomaat, että pensaan takana on kaksi pientä keijua\n')
         vaihtoehto = input(f'{vihrea}1. Lähesty keijuja varovasti{vari_reset}, {punainen}2. Yritä piiloutua ja kiertää keijut{vari_reset}: ')
 
+    while True:
+
         if vaihtoehto == '1':
             print('Haltijat tulevat iloisesti luoksesi ja kertovat sinulle tarinoita ja lauluja.\n'
                   'He tarjoavat sinulle myös taikajuomaa, joka tekee sinusta pienemmän\n'
                   'ja saat liidellä haltijoiden kanssa kukkien loistossa. Päiväsi muuttuu taianomaiseksi!\n')
+            break
+
 
         if vaihtoehto == '2':
             print('Yrität kiertää haltijat, mutta ne havaitsevat sinut.\n'
                   'Keijut tönäisevät sinut suohon! Olet jumissa suossa yön yli.\n'
                   f'Matkaasi lisätään {punainen}1{vari_reset} päivä\n')
             pelaaja.menneet_paivat += 1
+            break
 
         else:
             vaihtoehto = input(f'Valitse {vihrea}1{vari_reset}/{punainen}2{vari_reset}: ')
