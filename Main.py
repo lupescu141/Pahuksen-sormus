@@ -10,6 +10,8 @@ import random
 import sys
 import time
 import pygame
+from PIL import Image
+from eventit import event_valitsin
 
 
 # TEKSTIVÄRIT:
@@ -83,12 +85,12 @@ class Vihollinen:
 
 def alkusanat():
 
-    print('Tämä peli on luotu käyttäen hiilineutraalia sähköä. \n'
-    'Pelissä sinulle annetaan vaihtoehtoja, jotka valitaan tietyllä numeronäppäimellä. \n'
-    'tai kirjaimella Y/N. \n'
-    'Paina numeronäppäintä ja sen jälkeen enteriä. \n'
-    'Paina enter jatkaaksesi. \n')
+    print(f'\n\n\n{vihrea}{"Tämä peli on luotu käyttäen hiilineutraalia sähköä."}{vari_reset} \n\n'
+          f'Pelissä sinulle annetaan vaihtoehtoja, jotka valitaan tietyllä numeronäppäimillä tai kirjaimilla {keltainen}Y{vari_reset} tai {keltainen}N{vari_reset}. \n'
+          f'Aina kun on kirjoitettu haluttu toiminta, painetaan {keltainen}Enter{vari_reset} suorittaakseen se. \n\n')
 
+    input(f'{keltainen}Paina Enter jatkaaksesi päävalikkoon{vari_reset}')
+    print(f'\n\n\n\n')
 
 def esineiden_haku(pelaaja):
 
@@ -136,7 +138,7 @@ def esineen_arvonta(inventaario):
 
 def haluatko_nukkua(pelaaja):
 
-    valinta = input('Haluatko levätä yhden päivän ja palauttaa HP ja TP täysille? Y/N: ')
+    valinta = input(f'Haluatko levätä yhden päivän ja palauttaa {punainen}HP{vari_reset} ja {magenta}TP{vari_reset} täysille? {keltainen}Y/N{vari_reset}\n')
     while True:
 
         if valinta.upper() != 'Y' and valinta.upper() != 'N':
@@ -217,10 +219,12 @@ def luo_peli():
     while True:
         nimi = input('Anna hahmollesi nimi: ')
 
-        if len(nimi) < 2:
+        elif len(nimi) < 2:
+
             print('Et voi antaa tyhjää nimeä.')
 
         elif len(nimi) > 12:
+
             print('Nimen maksimipituus on 12 merkkiä pitkä')
 
         else:
@@ -257,22 +261,24 @@ def luo_pelaaja(peli_id):
 def lataa_peli(tallennetut_pelit):
 
     for tallennus in tallennetut_pelit:
-        print(f"{tallennus['peli_id']}. {tallennus['pelaaja_nimi']}")
+        print(f"{keltainen}{tallennus['peli_id']}{vari_reset}. {vihrea}{tallennus['pelaaja_nimi']}{vari_reset}")
 
+    print('')
     while True:
-        valinta = input('Mitä tallennusta haluat jatkaa? Kirjoita numero:  ')
+        valinta = input(f'Mitä tallennusta haluat jatkaa? Kirjoita {keltainen}numero{vari_reset} ja paina {keltainen}Enter{vari_reset}\n')
         tallennus_haku = False
+
         for tallennus in tallennetut_pelit:
 
             if valinta == str(tallennus['peli_id']):
                 tallennus_haku = True
-                print(f'{valinta} valittu.')
+                print(f'{keltainen}{valinta}{vari_reset} valittu.\n\n')
                 break
 
         if tallennus_haku == True:
             break
 
-        print(f"Ei löydy tallennusta valinnalla!")
+        print(f"{punainen}Ei löydy tallennusta valinnalla!{vari_reset}\n")
 
     return valinta
 
@@ -300,6 +306,11 @@ def paavalikko():
             print(f"        {keltainen}{x}{vari_reset}", end="")
 
         # Hakee txt tiedoston ja tulostaa päävalikon visuaalisen tekstin
+        for x in open(file="tekstitiedostot/pisteet.txt"
+                           ""):
+            print(f"        {punainen}{x}{vari_reset}", end="")
+
+        # Hakee txt tiedoston ja tulostaa päävalikon visuaalisen tekstin
         for x in open(file="tekstitiedostot/poistu.txt"):
             print(f"        {punainen}{x}{vari_reset}", end="")
 
@@ -309,6 +320,7 @@ def paavalikko():
 
             pelaaja = luo_pelaaja(luo_peli())
             pelaaja.sormus_sijainti = sormus_arpominen(pelaaja)
+            vaihtaa_aanet(pelaaja)
             break
 
         if valinta == "2":
@@ -319,6 +331,7 @@ def paavalikko():
                 continue
 
             pelaaja = luo_pelaaja(lataa_peli(tallennetut_pelit))
+            vaihtaa_aanet(pelaaja)
             break
 
         if valinta == "3":
@@ -358,9 +371,6 @@ def paivien_lisaaja(haluttu_kohde_id, pelaaja):
     loppu_koordinaatit = kohde['latitude_deg'], kohde['longitude_deg']
     alku_koordinaatit = nykyinen_sijainti['latitude_deg'], nykyinen_sijainti['longitude_deg']
     matka = distance.distance(alku_koordinaatit, loppu_koordinaatit).km
-
-    #lisätään pelaajalle matkus1tuksen päivät
-    pelaaja.menneet_paivat += + int(km_to_day(matka))
 
     return km_to_day(matka)
 
@@ -408,17 +418,17 @@ def perus_isku(pelaaja, vihollinen):
             random_aani= random.randint(1,3)
 
             if random_aani == 1:
-                pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/samurai-slash-6845.wav'))
+                pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/efektit/isku_perus2.wav'))
 
             elif random_aani == 2:
-                pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/slash-21834.wav'))
+                pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/efektit/isku_perus3.wav'))
 
             elif random_aani == 3:
-                pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/sword-hit-7160.wav'))
+                pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/efektit/isku_perus1.wav'))
 
         else:
             loki_printtaus1 = 'Vihollinen väisti iskusi.'
-            pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/swing-whoosh-110410.wav'))
+            pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/efektit/huti.wav'))
 
     else:
         loki_printtaus1 = 'Olet kuollut.'
@@ -442,12 +452,12 @@ def perus_isku_vihollinen(vihollinen, pelaaja):
 
             loki_printtaus2 = f'Vihollinen teki {isku} vahinkoa!'
             time.sleep(0.2)
-            pygame.mixer.Channel(2).play(pygame.mixer.Sound('aanet/male_hurt7-48124.wav'))
+            pygame.mixer.Channel(2).play(pygame.mixer.Sound('aanet/efektit/mies_sattuu.wav'))
 
         else:
             loki_printtaus2 = f'Väistit vihollisen iskun!'
             time.sleep(0.2)
-            pygame.mixer.Channel(2).play(pygame.mixer.Sound('aanet/swing-whoosh-110410.wav'))
+            pygame.mixer.Channel(2).play(pygame.mixer.Sound('aanet/efektit/huti.wav'))
 
     else:
         loki_printtaus2 = f'Vihollinen kuoli!'
@@ -474,20 +484,26 @@ def sijainti_valitsin(pelaaja):
             id_lista.append(kohde['id'])
 
         elif matka < 200:
-            print(f"{kohde['id']:2}. Kohteeseen {syaani}{kohde['fantasia_nimi']:28}{vari_reset} {keltainen}{km_to_day(matka)}{vari_reset} päivän matkustus.")
+            print(f"{keltainen}{kohde['id']:2}{vari_reset}. Kohteeseen {syaani}{kohde['fantasia_nimi']:28}{vari_reset} {punainen}{km_to_day(matka)}{vari_reset} päivän matkustus.")
             id_lista.append(kohde['id'])
 
         elif matka > 200:
-            print(f"{kohde['id']:2}. Kohteeseen {syaani}{kohde['fantasia_nimi']:28}{vari_reset} {keltainen}{km_to_day(matka)}{vari_reset} päivän matkustus.")
+            print(f"{keltainen}{kohde['id']:2}{vari_reset}. Kohteeseen {syaani}{kohde['fantasia_nimi']:28}{vari_reset} {punainen}{km_to_day(matka)}{vari_reset} päivän matkustus.")
             id_lista.append(kohde['id'])
 
-    print(f'\nOlet kohteessa {vihrea}{nykyinen_sijainti["fantasia_nimi"]}{vari_reset}\n'
+    print(f'\nOlet kohteessa {vihrea}{nykyinen_sijainti["fantasia_nimi"]}{vari_reset}\n\n'
           f"Seikkailuun on kulunut: {keltainen}{pelaaja.menneet_paivat}{vari_reset} päivää\n")
 
 
     while True:
 
-        valinta = input('Mihin kohteeseen haluat matkustaa? Kirjoita numero: ')
+        valinta = input(f'Mihin kohteeseen haluat matkustaa? Kirjoita {keltainen}numero{vari_reset} ja paina {keltainen}Enter{vari_reset}\n'
+                        f'Tai jos haluat avata kartan ensin kirjoita {keltainen}{"M"}{vari_reset} ja paina {keltainen}Enter{vari_reset}\n')
+
+        if valinta.upper() == 'M':
+            kartta = Image.open("kuvat/kartta.png")
+            kartta.show()
+            continue
 
         for id in id_lista:
 
@@ -499,9 +515,10 @@ def sijainti_valitsin(pelaaja):
             break
 
         else:
-            print('Virheellinen kohde.')
+            print(f'{punainen}Virheellinen kohde.{vari_reset}')
 
-    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/going-on-a-forest-road-gravel-and-grass-6404.wav'), 0, 2400)
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound(
+        'aanet/efektit/askeleet_hiekka.wav'), 0, 2400)
     return valinta
 
 
@@ -559,7 +576,7 @@ def taistelu(pelaaja, vihollinen):
               f" |{'_'*15}|{'_'*17}|{'_'*15}|{'_'*50}|\n")
 
         if pelaaja.hp <= 0:
-            pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/male-death-sound-128357.wav'))
+            pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/efektit/mies_kuolee.wav'))
             break
 
         if vihollinen.hp <= 0:
@@ -704,11 +721,11 @@ def taistelu(pelaaja, vihollinen):
                     vaara_esine_valinta_txt = 'Väärä valinta!'
 
     if vihollinen.hp <= 0:
-        input(f'{vihrea}Voitit Taistelun!{vari_reset}{keltainen} Paina Enter jatkaaksesi...{vari_reset}')
+        input(f'{vihrea}Voitit Taistelun!{vari_reset}{keltainen} Paina Enter jatkaaksesi...{vari_reset}\n')
         return True
 
     if pelaaja.hp <= 0:
-        input(f'{punainen}Voi ei! Hävisit taistelun!{vari_reset} {keltainen}Paina Enter jatkaaksesi...{vari_reset}')
+        input(f'{punainen}Voi ei! Hävisit taistelun!{vari_reset} {keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
         return False
 
 
@@ -718,13 +735,13 @@ def taistelu_mahdollisuus_laskuri(matkan_paivat):
     heitto = random.randint(1, 20)
 
     if heitto + matkan_paivat > 10:
-        print(f'{punainen}Matkustit liian varomattomasti. Jouduit taisteluun!{vari_reset}')
-        input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}')
+        print(f'{punainen}Matkustit liian varomattomasti. Jouduit taisteluun!{vari_reset}\n')
+        input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
         return True
 
     elif heitto + matkan_paivat <= 10:
-        print(f'{vihrea}Saavuit kohteeseen ilman taistelua{vari_reset}')
-        input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}')
+        print(f'{vihrea}Saavuit kohteeseen ilman taistelua{vari_reset}\n')
+        input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
         return False
 
 
@@ -764,10 +781,19 @@ def tallennuksen_poisto(pelaaja):
     print(f'{keltainen}Tallennuksesi on poistettu ja suorituksesti on lisätty piste tauluun.{vari_reset}')
 
 
+def kuolema_pelin_poisto(pelaaja):
+
+    sql = (f'DELETE FROM inventaario WHERE pelaajan_id = "{int(pelaaja.id)}";')
+    kursori = yhteys.cursor()
+    kursori.execute(sql)
+    sql = (f'DELETE FROM peli WHERE peli_id = "{int(pelaaja.id)}";')
+    kursori.execute(sql)
+
+
 # Tulostaa taustatarinan, jos käyttäjä syöttää halutun kirjaimen
 def taustatarina():
 
-    yn = input('Haluatko lukea taustatarinan ja ohjeet? Y/N: ')
+    yn = input(f'Haluatko lukea taustatarinan ja ohjeet? {keltainen}Y/N{vari_reset}\n')
 
     if yn.upper() == 'Y':
         print(f'Pahuus on alkanut saastuttaa maailmaa. Tarujen mukaan kauan sitten {punainen}Dracula Vlad{vari_reset} Viljeli pahuutta maailmaan.\n'
@@ -775,7 +801,7 @@ def taustatarina():
         print(f'Tehtäväsi on löytää pahuksen sormus ja viedä se tulivuoreen jossa kohtaat {punainen}Dracula Vladin{vari_reset}.')
         print('Voit matkustaa kohteisiin valitsemalla niitä edeltävän numeron.')
         print('Yritä löytää sormus mahdollisimman nopeasti ja viedä se tulivuoreen,\n'
-              'mutta muista, että mitä pidemmälle matkustat, sitä suurempi riski on kohdata Dracula Vladin kätyreitä.')
+              'mutta muista, että mitä pidemmälle matkustat, sitä suurempi riski on kohdata Dracula Vladin kätyreitä.\n')
         print(f'Seikkailusi alkaa kohteesta {vihrea}{nykyinen_sijainti["fantasia_nimi"]}{vari_reset}.\n')
 
     elif yn.upper() == 'N':
@@ -795,6 +821,18 @@ def tuleeko_event():
         return event
 
 
+# Vaihtaa äänet pelaajan sijainnin perusteella
+def vaihtaa_aanet(pelaaja):
+    # Vaihtaa musiikin ja taustaäänet pelaajan sijainnin perusteella
+    if pelaaja.sijainti == 1:
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/uudentoivon-kyla_musiikki.wav'), -1)
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/tausta/uudentoivon-kyla_tausta.wav'), -1, )
+
+    if pelaaja.sijainti == 2:
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/uudentoivon-kyla_musiikki.wav'), -1)
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/tausta/uudentoivon-kyla_tausta.wav'), -1, )
+
+
 # ESINEET:
 def eliksiiri(pelaaja):
 
@@ -807,11 +845,11 @@ def eliksiiri(pelaaja):
         pelaaja.hp += 1
         parannettu_maara += 1
 
-    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/085594_potion-35983.wav'))
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/efektit/eliksiiri1.wav'))
     time.sleep(0.2)
-    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/bottle_open-99732.wav'), 0, 910)
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/efektit/eliksiiri2.wav'), 0, 910)
     time.sleep(0.9)
-    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/heavy_swallowwav-14682.wav'))
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/efektit/nielee.wav'))
     time.sleep(0.3)
     palautettava_teksti = f'Eliksiiri paransi {parannettu_maara} elämä pistettä'
     return palautettava_teksti
@@ -826,38 +864,32 @@ def tulipallo(pelaaja, vihollinen):
     if vihollinen.hp < 0:
         vihollinen.hp = 0
     palautettava_teksti = f'Tulipallo käristi {vahinko_arvo} elämäpistettä viholliselta'
-    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/fire-magic-6947.wav'))
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/efektit/tulipallo.wav'))
     return palautettava_teksti
 
 
 # PÄÄOHJELMA:
 
-# Pelin alustus
-
-#Ääni asetukset
+# Ääni asetukset
 pygame.mixer.init()
-pygame.mixer.Channel(0).set_volume(0.05)
-pygame.mixer.Channel(0).set_volume(0.1)
+pygame.mixer.Channel(0).set_volume(0.03)
+pygame.mixer.Channel(1).set_volume(0.2)
+pygame.mixer.Channel(2).set_volume(0.2)
+pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/paavalikko_musiikki.wav'), -1)
 
-pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/mainmenu_theme.wav'), -1)
+# Pelin alustus
+alkusanat()
 pelaaja = paavalikko()
-pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/the-virgin-medieval-music-4238.wav'), -1)
 nykyinen_sijainti = pelaajan_sijainti(pelaaja.id)
 inventaario = esineiden_haku(pelaaja)
 taidot = taito_haku(pelaaja)
 peli_lapi = False
 
 
-alkusanat()
-
-
 # Peli käynnissä
 taustatarina()
 
 while peli_lapi == False:
-
-    if pelaaja.sijainti == 1:
-        pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/medieval_village_atmosphere-79282.wav'), -1,)
 
     # Pelaaja valitsee minne haluaa matkustaa
     valinta = int(sijainti_valitsin(pelaaja))
@@ -902,8 +934,8 @@ while peli_lapi == False:
               f'Savupilvestä astuu ulos sormuksen kuolleen haltijan {punainen}Gorgonin{vari_reset} henki.\n')
 
         print(f'{punainen}Gorgon: "Maailma on MINUN! Valmistaudu KUOLEMAAN!"')
-        input(f'{keltainen}Paina Enter aloittaaksesi viimeinen taistelu...{vari_reset}')
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/skjaldmr-norse-viking-background-music-110364(1).wav'), -1)
+        input(f'{keltainen}Paina Enter aloittaaksesi viimeinen taistelu...{vari_reset}\n')
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/gorgon_taistelu.wav'), -1)
 
         if taistelu(pelaaja, hae_bossi()) == True:
 
@@ -920,7 +952,7 @@ while peli_lapi == False:
 
             if lopetus == '1':
                 # Tausta_musiikki vaihtuu
-                pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/mainmenu_theme.wav'))
+                pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/paavalikko_musiikki.wav'))
 
                 print(f'Heität sormuksen tulivuoreen ja näät kuinka se laskeutuu hehkuvaan laavamereen.\n'
                       f'Hetken sormus pysyy pinnalla, mutta nopeasti se sulaa ja uppoaa laavaan.\n'
@@ -933,7 +965,7 @@ while peli_lapi == False:
             if lopetus == '2':
 
                 # Tausta_musiikki vaihtuu
-                pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/medieval-horror-music-theme-2916.wav'))
+                pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/paha_loppu.wav'))
 
                 print('Katsot sormusta ja alla hehkuvaa laavamerta. Sormus tarjoaa käyttäjälleen voimaa ja valtaa.\n'
                       'Se houkuttelee sinua ja antaudut sen valtaan.\n'
