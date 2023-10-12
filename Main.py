@@ -161,7 +161,6 @@ def haluatko_nukkua(pelaaja):
     if valinta.upper() == 'Y':
         pelaaja.hp = pelaaja.maxhp
         pelaaja.taitopiste = pelaaja.max_taitopiste
-        print(f'{punainen}HP: {pelaaja.hp}/{pelaaja.maxhp}   {magenta}TP: {pelaaja.taitopiste}/{pelaaja.max_taitopiste}{vari_reset}')
         pelaaja.menneet_paivat += 1
         pygame.mixer.Channel(0).play(pygame.mixer.Sound('male-snore-63981.wav'), 0, 4000)
         pygame.mixer.Channel(1).play(pygame.mixer.Sound('music-box-lullaby-clip-76605.wav'), 0, 4000)
@@ -171,7 +170,7 @@ def haluatko_nukkua(pelaaja):
     else:
         print('Päätit jatkaa lepäämättä. Rohkeaa.')
 
-
+# Hakee kaikki kohteet paitsi pelaajan kohteen
 def hae_kaikki_kohteet(pelaaja):
 
     sql = f'''SELECT airport.id, airport.fantasia_nimi, airport.latitude_deg, airport.longitude_deg 
@@ -1076,7 +1075,6 @@ while peli_lapi == False:
 
         # Hakee eventin kohteen perusteella
         event_valitsin(pelaaja)
-        print('')
 
         # pause
         input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}')

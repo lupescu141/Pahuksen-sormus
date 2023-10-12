@@ -158,7 +158,7 @@ def sammakkojarvi_event(pelaaja):
     event_nro = random.randint(1, 1)
 
     if event_nro == 1:
-        print('Saavut salaperäisen sammakkojärven rannalle.\n'
+        print('Saavut salaperäisen Sammakkojärven rannalle.\n'
               'Järvestä kohoaa outoja ääniä ja näet, että järvi on täynnä sammakoita.\n'
               'Yksi sammakoista pyytää suukkoa. Annatko sammakolle suukon?\n')
         vaihtoehto = input(f'{vihrea}1. Anna suukko{vari_reset}, {punainen}2. Kieltäydy tarjouksesta kohteliaasti{vari_reset}: ')
@@ -208,17 +208,19 @@ def suurentarmon_kaupunki_event(pelaaja):
 
 
 def hiisisuo_event(pelaaja):
+
     event_nro = random.randint(1, 1)
 
     if event_nro == 1:
         print('Jatkat matkaasi ja saavut säteilevään hiisisuohon.\n'
               'Suo on täynnä kristallinkirkkaita kukkasia.\n'
               'Yhtäkkiä huomaat, että pensaan takana on kaksi pientä keijua\n')
+
         vaihtoehto = input(f'{vihrea}1. Lähesty keijuja varovasti{vari_reset}, {punainen}2. Yritä piiloutua ja kiertää keijut{vari_reset}: ')
 
     while True:
-
         if vaihtoehto == '1':
+
             print('Haltijat tulevat iloisesti luoksesi ja kertovat sinulle tarinoita ja lauluja.\n'
                   'He tarjoavat sinulle myös taikajuomaa, joka tekee sinusta pienemmän\n'
                   'ja saat liidellä haltijoiden kanssa kukkien loistossa. Päiväsi muuttuu taianomaiseksi!\n')
