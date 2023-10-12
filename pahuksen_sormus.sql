@@ -136,10 +136,10 @@ CREATE TABLE IF NOT EXISTS `viholliset` (
 
 -- Dumping data for table pahuksen_sormus.viholliset: ~4 rows (suunnilleen)
 REPLACE INTO `viholliset` (`vihollinen_id`, `vihollinen_nimi`, `vihollinen_hp`, `vihollinen_maksimi_hp`, `vihollinen_suojaus`, `vihollinen_isku`, `bossi`) VALUES
-	(1, 'peikko', 12, 12, 12, 6, 0),
-	(2, 'luuranko', 10, 10, 10, 6, 0),
+	(1, 'Peikko', 12, 12, 12, 6, 0),
+	(2, 'Luuranko', 10, 10, 10, 6, 0),
 	(3, 'Gorgon', 30, 30, 12, 8, 1),
-	(4, 'jätti sammakko', 15, 15, 8, 4, 0);
+	(4, 'Jättisammakko', 15, 15, 8, 4, 0);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
