@@ -5,7 +5,6 @@ import geopy
 from geopy import distance
 import mysql.connector
 from mysql.connector import errorcode
-import keyboard
 import random
 import sys
 import time
