@@ -849,7 +849,7 @@ def taustatarina():
         yn = input(f'Haluatko lukea taustatarinan ja ohjeet?{keltainen}Y/N: {vari_reset}\n')
 
         if yn.upper() == 'Y':
-            for x in open(file="tekstitiedostot/alkutarina.txt"):
+            for x in open(file="tekstitiedostot/alkutarina.txt",encoding="utf-8"):
                 print(f"{keltainen}{str(x)}{vari_reset}", end="")
             input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
             break
@@ -1173,9 +1173,9 @@ while peli_lapi == False:
         input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
 
         # Lopputekstit tulee vain jos peli pelataan läpi.
-        for x in open(file="tekstitiedostot/lopputekstit.txt"):
+        for x in open(file="tekstitiedostot/lopputekstit.txt",encoding="utf-8"):
             print(f"{keltainen}{x}{vari_reset}", end="")
         input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
-        for x in open(file="aanet/lainatut_aanet.txt"):
+        for x in open(file="aanet/lainatut_aanet.txt",encoding="utf-8"):
             print(f"                            {keltainen}{x}{vari_reset}", end="")
         break
