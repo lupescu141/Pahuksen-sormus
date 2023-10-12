@@ -92,11 +92,11 @@ def velhotorni_event():
         while True:
             if vaihtoehto == '1':
                 print('Käsissäsi on liikaa eliksiirejä.\n'
-                      'Eliksiirit kaatuvat ja hajoavat maahan\n')
+                      'Eliksiirit kaatuvat ja hajoavat maahan.\n')
                 break
 
             if vaihtoehto == '2':
-                print('Päätät jättää eliksiirit paikalleensa. Jatkat matkaa\n')
+                print('Päätät jättää eliksiirit paikalleensa. Jatkat matkaa.\n')
                 break
 
             else:
@@ -111,7 +111,7 @@ def varisrame_event(pelaaja):
     if event_nro == 1:
         print('Löydät rämeiköstä nuhjaantuuneen loitsukirjan.\n'
               'Se houkuttelee sinua.\n')
-        vaihtoehto = input(f'{vihrea}1. Nappaa loitsukirja ja tutki sitä{vari_reset}, {punainen}2. jätä loitsu kirja rämeikköön{vari_reset}: ')
+        vaihtoehto = input(f'{vihrea}1. Nappaa loitsukirja ja tutki sitä{vari_reset} {punainen}2. Jätä loitsukirja rämeikköön{vari_reset}: ')
 
         while True:
             if vaihtoehto == '1':
@@ -161,7 +161,7 @@ def sammakkojarvi_event(pelaaja):
         print('Saavut salaperäisen Sammakkojärven rannalle.\n'
               'Järvestä kohoaa outoja ääniä ja näet, että järvi on täynnä sammakoita.\n'
               'Yksi sammakoista pyytää suukkoa. Annatko sammakolle suukon?\n')
-        vaihtoehto = input(f'{vihrea}1. Anna suukko{vari_reset}, {punainen}2. Kieltäydy tarjouksesta kohteliaasti{vari_reset}: ')
+        vaihtoehto = input(f'{vihrea}1. Anna suukko{vari_reset} {punainen}2. Kieltäydy tarjouksesta kohteliaasti{vari_reset}: ')
         while True:
             if vaihtoehto == '1':
                 print('Suostut antamaan sammakolle suukon, ja yhtäkkiä sammakko muuttuu kauniiksi prinssiksi!\n'
@@ -212,11 +212,11 @@ def hiisisuo_event(pelaaja):
     event_nro = random.randint(1, 1)
 
     if event_nro == 1:
-        print('Jatkat matkaasi ja saavut säteilevään hiisisuohon.\n'
+        print('Jatkat matkaasi ja saavut säteilevään Hiisisuohon.\n'
               'Suo on täynnä kristallinkirkkaita kukkasia.\n'
               'Yhtäkkiä huomaat, että pensaan takana on kaksi pientä keijua\n')
 
-        vaihtoehto = input(f'{vihrea}1. Lähesty keijuja varovasti{vari_reset}, {punainen}2. Yritä piiloutua ja kiertää keijut{vari_reset}: ')
+        vaihtoehto = input(f'{vihrea}1. Lähesty keijuja varovasti{vari_reset} {punainen}2. Yritä piiloutua ja kiertää keijut{vari_reset}: ')
 
     while True:
         if vaihtoehto == '1':
