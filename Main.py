@@ -92,6 +92,7 @@ def alkusanat():
     input(f'{keltainen}Paina Enter jatkaaksesi päävalikkoon{vari_reset}')
     print(f'\n\n\n\n')
 
+
 def  esineiden_haku(pelaaja):
 
     sql = (f'SELECT esine_nimi, esineen_id FROM inventaario, esineet, peli WHERE esineen_id = esine_id AND pelaajan_id = "{str(pelaaja.id)}" AND peli_id = "{str(pelaaja.id)}"')
@@ -101,22 +102,6 @@ def  esineiden_haku(pelaaja):
 
 
     return inventaario_lista
-
-
-def esineen_maara(pelaaja):
-
-    sql = f'SELECT esine_nimi FROM inventaario, esineet, peli WHERE esineen_id = esine_id AND pelaajan_id = {pelaaja.id}'
-    kursori = yhteys.cursor(dictionary=True)
-    kursori.execute(sql)
-    esineet = kursori.fetchall()
-
-    if len(esineet) >= 3:
-        print('Sinulle ei mahdu kuin 3 esinettä')
-        return False
-
-    else:
-        print('Sinulle mahtuu esineitä.')
-        return True
 
 
 def esineen_arvonta(inventaario):
@@ -168,13 +153,14 @@ def haluatko_nukkua(pelaaja):
         pelaaja.hp = pelaaja.maxhp
         pelaaja.taitopiste = pelaaja.max_taitopiste
         pelaaja.menneet_paivat += 1
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('male-snore-63981.wav'), 0, 4000)
-        pygame.mixer.Channel(1).play(pygame.mixer.Sound('music-box-lullaby-clip-76605.wav'), 0, 4000)
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/efektit/mies_kuorsaa.wav'), 0, 4000)
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/musiikki/nukkuu.wav'), 0, 4000)
         time.sleep(4)
         vaihtaa_aanet(pelaaja)
 
     else:
         print('Päätit jatkaa lepäämättä. Rohkeaa.')
+
 
 # Hakee kaikki kohteet paitsi pelaajan kohteen
 def hae_kaikki_kohteet(pelaaja):
@@ -239,8 +225,6 @@ def luo_peli():
     kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
     pelaajat = kursori.fetchall()
-
-
 
     while True:
         nimi = input('Anna hahmollesi nimi: ')
@@ -326,7 +310,7 @@ def onko_kohteessa_sormus(pelaaja):
     if pelaaja.onko_sormus == 0:
 
         if int(pelaaja.sijainti) == int(pelaaja.sormus_sijainti):
-            pygame.mixer.Channel(1).play(pygame.mixer.Sound('success-fanfare-trumpets-6185.mp3'))
+            pygame.mixer.Channel(2).play(pygame.mixer.Sound('aanet/efektit/sormusloytynyt.mp3'))
             print(f'{vihrea}Löysit sormuksen!!{vari_reset}\n\n')
             pelaaja.onko_sormus = 1
             input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}')
@@ -397,7 +381,6 @@ def paavalikko():
             poistu()
 
     return pelaaja
-
 
 
 def paivien_lisaaja(haluttu_kohde_id, pelaaja):
@@ -491,6 +474,7 @@ def perus_isku(pelaaja, vihollinen):
 
     return loki_printtaus1
 
+
 # Viholisen perusisku
 def perus_isku_vihollinen(vihollinen, pelaaja):
 
@@ -519,6 +503,7 @@ def perus_isku_vihollinen(vihollinen, pelaaja):
         loki_printtaus2 = f'Vihollinen kuoli!'
 
     return loki_printtaus2
+
 
 # Tulostaa pelaajalle kohteet ja etäisyydet. Palauttaa valitun kohteen id:n
 def sijainti_valitsin(pelaaja):
@@ -741,7 +726,13 @@ def taistelu(pelaaja, vihollinen):
                     if esine1 == 'eliksiiri':
                         loki_txt1 = eliksiiri(pelaaja)
                         inventaario.pop(0)
-                        loki_txt2 = perus_isku_vihollinen(vihollinen,pelaaja)
+                        loki_txt2 = perus_isku_vihollinen(vihollinen, pelaaja)
+                        break
+
+                    if esine1 == 'taitojuoma':
+                        loki_txt1 = taitojuoma(pelaaja)
+                        inventaario.pop(0)
+                        loki_txt2 = perus_isku_vihollinen(vihollinen, pelaaja)
                         break
 
                     if esine1 == 'Tyhjä':
@@ -755,6 +746,12 @@ def taistelu(pelaaja, vihollinen):
                         loki_txt2 = perus_isku_vihollinen(vihollinen, pelaaja)
                         break
 
+                    if esine2 == 'taitojuoma':
+                        loki_txt1 = taitojuoma(pelaaja)
+                        inventaario.pop(0)
+                        loki_txt2 = perus_isku_vihollinen(vihollinen, pelaaja)
+                        break
+
                     if esine2 == 'Tyhjä':
                         vaara_esine_valinta_txt ='Esinettä ei ole paikassa 2'
 
@@ -763,6 +760,12 @@ def taistelu(pelaaja, vihollinen):
                     if esine3 == 'eliksiiri':
                         loki_txt1 = eliksiiri(pelaaja)
                         inventaario.pop(2)
+                        loki_txt2 = perus_isku_vihollinen(vihollinen, pelaaja)
+                        break
+
+                    if esine3 == 'taitojuoma':
+                        loki_txt1 = taitojuoma(pelaaja)
+                        inventaario.pop(0)
                         loki_txt2 = perus_isku_vihollinen(vihollinen, pelaaja)
                         break
 
@@ -791,7 +794,7 @@ def taistelu_mahdollisuus_laskuri(matkan_paivat):
 
     if heitto + matkan_paivat > 10:
         pygame.mixer.Channel(0).pause()
-        pygame.mixer.Channel(1).play(pygame.mixer.Sound('braam-classic-satellite-g-cinematic-trailer-sound-effects-123877.mp3'))
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/efektit/taistelu_alkaa.mp3'))
         print(f'{punainen}Matkustit liian varomattomasti. Jouduit taisteluun!{vari_reset}\n')
         input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
         vaitaa_aanet_taistelu()
@@ -887,77 +890,86 @@ def vaitaa_aanet_taistelu():
     aani = random.randint(1, 7)
 
     if aani == 1:
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('action-drums-1-154690.mp3'), -1)
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taitelu_musiikki1.mp3'), -1)
         pygame.mixer.Channel(1).pause()
 
     if aani == 2:
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('action-drums-2-154692.mp3'), -1)
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taitelu_musiikki2.mp3'), -1)
         pygame.mixer.Channel(1).pause()
 
     if aani == 3:
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('action-drums-3-154693.mp3'), -1)
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taitelu_musiikki3.mp3'), -1)
         pygame.mixer.Channel(1).pause()
 
     if aani == 4:
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('action-drums-4-154694.mp3'), -1)
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taitelu_musiikki4.mp3'), -1)
         pygame.mixer.Channel(1).pause()
 
     if aani == 5:
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('action-drums-5-154695.mp3'), -1)
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taitelu_musiikki5.mp3'), -1)
         pygame.mixer.Channel(1).pause()
 
     if aani == 6:
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('action-drums-6-154696.mp3'), -1)
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taitelu_musiikki6.mp3'), -1)
         pygame.mixer.Channel(1).pause()
 
     if aani == 7:
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('action-drums-7-154697.mp3'), -1)
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taitelu_musiikki7.mp3'), -1)
         pygame.mixer.Channel(1).pause()
 
 
 # Vaihtaa äänet pelaajan sijainnin perusteella
 def vaihtaa_aanet(pelaaja):
 
-    # Vaihtaa musiikin ja taustaäänet pelaajan sijainnin perusteella
+    # Uudentoivon-kylä
     if pelaaja.sijainti == 1:
         pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/uudentoivon-kyla_musiikki.wav'), -1)
         pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/tausta/uudentoivon-kyla_tausta.wav'), -1, )
 
+    # Ruoholaakso
     if pelaaja.sijainti == 2:
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('birdsong-in-moss-valley-24455.wav'), -1)
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/tausta/ruoholaakso_tausta.wav'), -1)
         pygame.mixer.Channel(1).pause()
 
+    # Velhotorni
     if pelaaja.sijainti == 3:
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('let-the-mystery-unfold-122118.wav'), -1)
-        pygame.mixer.Channel(1).play(pygame.mixer.Sound('dungeon-air-6983.wav'), -1, )
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/velhotorni_musiikki.wav'), -1)
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/tausta/velhotorni_tausta.wav'), -1, )
 
+    # Varisräme
     if pelaaja.sijainti == 4:
         pygame.mixer.Channel(0).pause()
-        pygame.mixer.Channel(1).play(pygame.mixer.Sound('flock-of-crows-ravens-cawing-129073.wav'), -1, )
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/tausta/varisräme_tausta.wav'), -1, )
 
+    # Noitametsä
     if pelaaja.sijainti == 5:
         pygame.mixer.Channel(0).pause()
-        pygame.mixer.Channel(1).play(pygame.mixer.Sound('forest-swamp-6751.wav'), -1, )
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/tausta/noitametsä_tausta.wav'), -1, )
 
+    # Sammakkojärvi
     if pelaaja.sijainti == 6:
         pygame.mixer.Channel(0).pause()
-        pygame.mixer.Channel(1).play(pygame.mixer.Sound('nature-at-the-lake-17890.wav'), -1)
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/tausta/sammakkojärvi_tausta.wav'), -1)
 
+    # Suurentarmon-kaupunki
     if pelaaja.sijainti == 7:
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('the-britons-127687.wav'), -1)
-        pygame.mixer.Channel(1).play(pygame.mixer.Sound('dutch-marketplace-2-22740.wav'), -1, )
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/suurentarmon-kaupunki_musiikki.wav'), -1)
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/tausta/suurentarmon-kaupunki_tausta.wav'), -1, )
 
+    # Hiisisuo
     if pelaaja.sijainti == 8:
         pygame.mixer.Channel(0).pause()
-        pygame.mixer.Channel(1).play(pygame.mixer.Sound('swamp-woods-34735.wav'), -1, )
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/tausta/hiisisuo_tausta.wav'), -1, )
 
+    # Peikkoluola
     if pelaaja.sijainti == 9:
         pygame.mixer.Channel(0).pause()
-        pygame.mixer.Channel(1).play(pygame.mixer.Sound('droplets-in-a-cave-6785.wav'), -1, )
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/tausta/peikkoluola_tausta.wav'), -1, )
 
+    # Tulivuori
     if pelaaja.sijainti == 10:
         pygame.mixer.Channel(0).pause()
-        pygame.mixer.Channel(1).play(pygame.mixer.Sound('lava-loop-3-28887.wav'), -1, )
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/tausta/tulivuori_tausta.wav'), -1, )
 
 
 # ESINEET:
@@ -993,11 +1005,11 @@ def taitojuoma(pelaaja):
         pelaaja.taitopiste += 1
         parannettu_maara += 1
 
-    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/085594_potion-35983.wav'))
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/efektit/eliksiiri1.wav'))
     time.sleep(0.2)
-    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/bottle_open-99732.wav'), 0, 910)
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/efektit/eliksiiri2.wav'), 0, 910)
     time.sleep(0.9)
-    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/heavy_swallowwav-14682.wav'))
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/efektit/nielee.wav'))
     time.sleep(0.3)
     palautettava_teksti = f'Sait {parannettu_maara} taitopistettä'
     return palautettava_teksti
@@ -1178,6 +1190,7 @@ while peli_lapi == False:
 
     # Jos Gorgon voitetaan pelaajan pisteet tallennetaan pisteet tauluun
     if peli_lapi == True:
+
         tallennuksen_poisto_ja_pisteet(pelaaja)
         input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
 
