@@ -9,19 +9,19 @@ gorgon_taistelu.wav             - skjaldmr norse viking background music        
 ------------------------------------------------------------------------------------------------------------------
 paha_loppu.wav                  - medieval horror music theme                                   : ASTROFREQ
 ------------------------------------------------------------------------------------------------------------------
-taitelu_musiikki1.mp3           - action drums 1                                                : Ashenrise
+taistelu_musiikki1.mp3           - action drums 1                                               : Ashenrise
 ------------------------------------------------------------------------------------------------------------------
-taitelu_musiikki2.mp3           - action drums 2                                                : Ashenrise
+taistelu_musiikki2.mp3           - action drums 2                                               : Ashenrise
 ------------------------------------------------------------------------------------------------------------------
-taitelu_musiikki3.mp3           - action drums 3                                                : Ashenrise
+taistelu_musiikki3.mp3           - action drums 3                                               : Ashenrise
 ------------------------------------------------------------------------------------------------------------------
-taitelu_musiikki4.mp3           - action drums 4                                                : Ashenrise
+taistelu_musiikki4.mp3           - action drums 4                                               : Ashenrise
 ------------------------------------------------------------------------------------------------------------------
-taitelu_musiikki5.mp3           - action drums 5                                                : Ashenrise
+taistelu_musiikki5.mp3           - action drums 5                                               : Ashenrise
 ------------------------------------------------------------------------------------------------------------------
-taitelu_musiikki6.mp3           - action drums 6                                                : Ashenrise
+taistelu_musiikki6.mp3           - action drums 6                                               : Ashenrise
 ------------------------------------------------------------------------------------------------------------------
-taitelu_musiikki7.mp3           - action drums 7                                                : Ashenrise
+taistelu_musiikki7.mp3           - action drums 7                                               : Ashenrise
 ------------------------------------------------------------------------------------------------------------------
 nukkuu.wav                      - music box lullaby clip                                        : Pixabay
 ------------------------------------------------------------------------------------------------------------------

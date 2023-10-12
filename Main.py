@@ -890,31 +890,31 @@ def vaitaa_aanet_taistelu():
     aani = random.randint(1, 7)
 
     if aani == 1:
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taitelu_musiikki1.mp3'), -1)
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taistelu_musiikki1.mp3'), -1)
         pygame.mixer.Channel(1).pause()
 
     if aani == 2:
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taitelu_musiikki2.mp3'), -1)
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taistelu_musiikki2.mp3'), -1)
         pygame.mixer.Channel(1).pause()
 
     if aani == 3:
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taitelu_musiikki3.mp3'), -1)
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taistelu_musiikki3.mp3'), -1)
         pygame.mixer.Channel(1).pause()
 
     if aani == 4:
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taitelu_musiikki4.mp3'), -1)
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taistelu_musiikki4.mp3'), -1)
         pygame.mixer.Channel(1).pause()
 
     if aani == 5:
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taitelu_musiikki5.mp3'), -1)
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taistelu_musiikki5.mp3'), -1)
         pygame.mixer.Channel(1).pause()
 
     if aani == 6:
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taitelu_musiikki6.mp3'), -1)
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taistelu_musiikki6.mp3'), -1)
         pygame.mixer.Channel(1).pause()
 
     if aani == 7:
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taitelu_musiikki7.mp3'), -1)
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('aanet/musiikki/taistelu_musiikki7.mp3'), -1)
         pygame.mixer.Channel(1).pause()
 
 
