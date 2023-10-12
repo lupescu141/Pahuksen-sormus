@@ -242,11 +242,11 @@ def luo_peli():
 
         elif len(nimi) < 2:
 
-            print('Et voi antaa tyhjää nimeä.')
+            print('Nimen minimipituus on 2 merkkiä.')
 
         elif len(nimi) > 12:
 
-            print('Nimen maksimipituus on 12 merkkiä pitkä')
+            print('Nimen maksimipituus on 12 merkkiä pitkä.')
 
         else:
             break
@@ -549,7 +549,7 @@ def sijainti_valitsin(pelaaja):
         for id in id_lista:
 
             if str(id) == valinta:
-                print(f'{valinta} valittu!')
+                print(f'{keltainen}{valinta} valittu!{vari_reset}')
                 oikea_kohde = 1
 
         if oikea_kohde == 1:
@@ -1096,9 +1096,6 @@ while peli_lapi == False:
 
         # Hakee eventin kohteen perusteella
         event_valitsin(pelaaja)
-
-        # pause
-        input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}')
 
         # Katsotaan kuoliko pelaaja
         if pelaaja.hp <= 0:

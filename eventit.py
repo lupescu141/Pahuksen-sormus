@@ -221,14 +221,14 @@ def hiisisuo_event(pelaaja):
     while True:
         if vaihtoehto == '1':
 
-            print('Haltijat tulevat iloisesti luoksesi ja kertovat sinulle tarinoita ja lauluja.\n'
+            print('Keijut tulevat iloisesti luoksesi ja kertovat sinulle tarinoita ja lauluja.\n'
                   'He tarjoavat sinulle myös taikajuomaa, joka tekee sinusta pienemmän\n'
-                  'ja saat liidellä haltijoiden kanssa kukkien loistossa. Päiväsi muuttuu taianomaiseksi!\n')
+                  'ja saat liidellä keijujen kanssa kukkien loistossa. Päiväsi muuttuu taianomaiseksi!\n')
             break
 
 
         if vaihtoehto == '2':
-            print('Yrität kiertää haltijat, mutta ne havaitsevat sinut.\n'
+            print('Yrität kiertää keijut, mutta ne havaitsevat sinut.\n'
                   'Keijut tönäisevät sinut suohon! Olet jumissa suossa yön yli.\n'
                   f'Matkaasi lisätään {punainen}1{vari_reset} päivä\n')
             pelaaja.menneet_paivat += 1
