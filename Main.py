@@ -86,6 +86,7 @@ class Vihollinen:
 def alkusanat():
 
     print(f'\n\n\n{vihrea}{"Tämä peli on luotu käyttäen hiilineutraalia sähköä."}{vari_reset} \n\n'
+          f'Suositellaan käyttää tummaa taustaa pelatessa.\n\n'
           f'Pelissä sinulle annetaan vaihtoehtoja, jotka valitaan tietyllä numeronäppäimillä tai kirjaimilla {keltainen}Y{vari_reset} tai {keltainen}N{vari_reset}. \n'
           f'Aina kun on kirjoitettu haluttu toiminta, painetaan {keltainen}Enter{vari_reset} suorittaakseen se. \n\n')
 
