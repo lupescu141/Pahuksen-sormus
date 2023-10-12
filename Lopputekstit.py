@@ -3,7 +3,6 @@ import pygame
 from pygame.locals import *
 
 
-
 def main():
     pygame.init()
     pygame.display.set_caption('End credits')
@@ -35,6 +34,5 @@ def main():
             return
 
         pygame.display.flip()
-
         clock.tick(60)
 
