@@ -247,7 +247,7 @@ def peikkoluola_event(pelaaja):
         print('Kävelet rauhallista polkua pitkin kohti Peikkoluolaa.\n'
               'Astelet sillan yli kun kuulet jonkun kutsuvan sinua.\n')
 
-        vaihtoehto = input(f'{vihrea}1. Tutki rohkeasti, kuka on sillan alla{vari_reset}, {punainen}2. Jatka matkaasi kohti peikkoluolaa{vari_reset}: ')
+        vaihtoehto = input(f'{vihrea}1. Tutki rohkeasti, kuka on sillan alla{vari_reset}, {punainen}2. Jatka matkaasi kohti Peikkoluolaa{vari_reset}: ')
         while True:
             if vaihtoehto == '1':
                 print('Kurkkaat rohkeasti sillan alle ja tunnet nopean riuhtaisun.\n'
@@ -257,7 +257,7 @@ def peikkoluola_event(pelaaja):
                 break
 
             if vaihtoehto == '2':
-                print('Jatkat matkaasi kohti peikkoluolaa...\n')
+                print('Jatkat matkaasi kohti Peikkoluolaa...\n')
                 break
 
             else:
