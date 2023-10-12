@@ -672,6 +672,9 @@ def taistelu(pelaaja, vihollinen):
                     if taito1 == 'Tyhjä':
                         vaara_taito_valinta_txt = 'Taitoa ei ole paikassa 1'
 
+                    if pelaaja.taitopiste == 0:
+                        vaara_taito_valinta_txt = 'Sinulla ei ole taitopisteitä!'
+
                 elif taidot_valinta == '2':
 
                     if taito2 == 'Tyhjä':
@@ -797,7 +800,7 @@ def taistelu_mahdollisuus_laskuri(matkan_paivat):
         pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/efektit/taistelu_alkaa.mp3'))
         print(f'{punainen}Matkustit liian varomattomasti. Jouduit taisteluun!{vari_reset}\n')
         input(f'{keltainen}Paina Enter jatkaaksesi...{vari_reset}\n')
-        vaitaa_aanet_taistelu()
+        vaihtaa_aanet_taistelu()
         return True
 
     elif heitto + matkan_paivat <= 10:
@@ -872,20 +875,8 @@ def taustatarina():
             print(f'{punainen}Väärä valinta!{vari_reset}\n\n')
 
 
-# Arpoo tuleeko event ja hakee sen randomilla taulusta
-def tuleeko_event():
-
-    if random.choice([True, False]) == True:
-
-        sql = 'SELECT event.id FROM event ORDER BY RAND() LIMIT 1;'
-        kursori = yhteys.cursor
-        kursori.execute(sql)
-        event = kursori.fetchone()
-        return event
-
-
 # Vaihtaa musiikin. Taistelua varten
-def vaitaa_aanet_taistelu():
+def vaihtaa_aanet_taistelu():
 
     aani = random.randint(1, 7)
 
@@ -990,7 +981,7 @@ def eliksiiri(pelaaja):
     time.sleep(0.9)
     pygame.mixer.Channel(1).play(pygame.mixer.Sound('aanet/efektit/nielee.wav'))
     time.sleep(0.3)
-    palautettava_teksti = f'Eliksiiri paransi {parannettu_maara} elämä pistettä'
+    palautettava_teksti = f'Eliksiiri paransi {parannettu_maara} elämäpistettä'
     return palautettava_teksti
 
 
