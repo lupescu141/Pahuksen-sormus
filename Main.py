@@ -92,12 +92,13 @@ def alkusanat():
     input(f'{keltainen}Paina Enter jatkaaksesi päävalikkoon{vari_reset}')
     print(f'\n\n\n\n')
 
-def esineiden_haku(pelaaja):
+def  esineiden_haku(pelaaja):
 
-    sql = f'SELECT esine_nimi, esineen_id FROM inventaario, esineet, peli WHERE esineen_id = esine_id AND pelaajan_id = "{pelaaja.id}"'
+    sql = (f'SELECT esine_nimi, esineen_id FROM inventaario, esineet, peli WHERE esineen_id = esine_id AND pelaajan_id = "{str(pelaaja.id)}" AND peli_id = "{str(pelaaja.id)}"')
     kursori = yhteys.cursor(dictionary=True)
     kursori.execute(sql)
     inventaario_lista = kursori.fetchall()
+
 
     return inventaario_lista
 
@@ -129,9 +130,14 @@ def esineen_arvonta(inventaario):
         kursori.execute(sql)
         random_esine = kursori.fetchone()
         print('')
-        print(f"Sait {vihrea}{random_esine['esine_nimi']}{vari_reset}")
+        print(f"Sait esineen: {vihrea}{random_esine['esine_nimi']}{vari_reset}")
         print('')
         inventaario.append(random_esine)
+
+    else:
+        print('')
+        print(f'Et löytänyt esineitä')
+        print('')
 
     return
 
@@ -151,7 +157,7 @@ def haluatko_nukkua(pelaaja):
 
         valinta = input(f'Haluatko levätä yhden päivän ja palauttaa {punainen}HP{vari_reset} ja {magenta}TP{vari_reset} täysille? {keltainen}Y/N{vari_reset}\n')
 
-        if valinta.upper() != 'Y' and valinta.upper() != 'N':
+        while valinta.upper() != 'Y' and valinta.upper() != 'N':
 
             valinta = input('Virheellinen syöte. kirjoita Y (kyllä) tai N (ei) ')
 
@@ -976,7 +982,7 @@ def eliksiiri(pelaaja):
     return palautettava_teksti
 
 
-def taitopotion(pelaaja):
+def taitojuoma(pelaaja):
 
     parannus_arvo = 3
     parannettu_maara = 0
@@ -1043,10 +1049,13 @@ while peli_lapi == False:
         if taistelu(pelaaja, hae_random_vihollinen()) == True:
 
             # Tarkistetaan mahtuuko pelaajalle esineitä
-            if len(inventaario) <= 3:
+            if len(inventaario) < 3:
 
                 # Arvotaan random esine
                 esineen_arvonta(inventaario)
+
+            else:
+                print(f'{punainen}Sinulle ei mahdu esineitä{vari_reset}')
 
             # Lisätään pelaaja olioon päivät
             pelaaja.menneet_paivat += paivien_lisaaja(valinta, pelaaja)
@@ -1081,7 +1090,7 @@ while peli_lapi == False:
 
         # Katsotaan kuoliko pelaaja
         if pelaaja.hp <= 0:
-            print('Sinä kuolit.')
+            print('Sinä kuolit. Tallennuksesi on poistettu')
             kuolema_pelin_poisto(pelaaja)
             break
 

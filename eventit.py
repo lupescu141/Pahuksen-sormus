@@ -108,7 +108,7 @@ def velhotorni_event():
 def varisrame_event(pelaaja):
     event_nro = random.randint(1, 1)
 
-    if event_nro == '1':
+    if event_nro == 1:
         print('Löydät rämeiköstä nuhjaantuuneen loitsukirjan.\n'
               'Se houkuttelee sinua.\n')
         vaihtoehto = input(f'{vihrea}1. Nappaa loitsukirja ja tutki sitä{vari_reset}, {punainen}2. jätä loitsu kirja rämeikköön{vari_reset}: ')
@@ -140,8 +140,8 @@ def noitametsa_event(pelaaja):
 
         while True:
             if vaihtoehto == '1':
-                pelaaja.hp += 10
-                print(f'Noidat ovat anteliaita ja saat juoda heidän taikalientään. Saat {punainen}10 HP{vari_reset}!\n')
+                pelaaja.hp = pelaaja.maxhp
+                print(f'Noidat ovat anteliaita ja saat juoda heidän taikalientään. Saat {punainen}MAX HP{vari_reset}!\n')
                 break
 
             if vaihtoehto == '2':
@@ -166,8 +166,8 @@ def sammakkojarvi_event(pelaaja):
             if vaihtoehto == '1':
                 print('Suostut antamaan sammakolle suukon, ja yhtäkkiä sammakko muuttuu kauniiksi prinssiksi!\n'
                       'Pelastit prinssin elämän ja löysit oman seikkailurakkautesi!\n'
-                      f'Rakkaudesta täyttyneenä saat {punainen}5 HP{vari_reset}\n')
-                pelaaja.hp += 5
+                      f'Rakkaudesta täyttyneenä saat {punainen}MAX HP{vari_reset}\n')
+                pelaaja.hp = pelaaja.maxhp
                 break
 
             if vaihtoehto == '2':
