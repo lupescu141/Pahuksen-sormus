@@ -82,6 +82,7 @@ class Vihollinen:
 
 # FUNKTIOT:
 
+# Alkusanat ennen päävalikkoa
 def alkusanat():
 
     print(f'\n\n\n{vihrea}{"Tämä peli on luotu käyttäen hiilineutraalia sähköä."}{vari_reset} \n\n'
@@ -93,6 +94,7 @@ def alkusanat():
     print(f'\n\n\n\n')
 
 
+# Hakeee esineet tietokannasta ja palauttaa inventaario sanakirja listan
 def  esineiden_haku(pelaaja):
 
     sql = (f'SELECT esine_nimi, esineen_id FROM inventaario, esineet, peli WHERE esineen_id = esine_id AND pelaajan_id = "{str(pelaaja.id)}" AND peli_id = "{str(pelaaja.id)}"')
@@ -104,6 +106,7 @@ def  esineiden_haku(pelaaja):
     return inventaario_lista
 
 
+# Arpoo esineen tietokannasta pelaajan inventaarioon
 def esineen_arvonta(inventaario):
 
     randomi = random.randint(1, 20)
@@ -127,6 +130,7 @@ def esineen_arvonta(inventaario):
     return
 
 
+# Kysyy käyttäjältä syötteen ja sen perusteella palauttaa pelaajan arvot täysille
 def haluatko_nukkua(pelaaja):
 
     pelaaja_hp = 'HP: ' + str(pelaaja.hp) + '/' + str(pelaaja.maxhp)
@@ -175,6 +179,7 @@ def hae_kaikki_kohteet(pelaaja):
     return lista
 
 
+# Hakee yhden random vihollisen tietokannasta joka ei ole bossi ja palauttaa sen oliona
 def hae_random_vihollinen():
 
     sql = 'SELECT * FROM viholliset WHERE bossi = "0" ORDER by RAND() LIMIT 1'
@@ -187,6 +192,7 @@ def hae_random_vihollinen():
     return vihollinen
 
 
+#Hakee tietokannasta random vihollisen joka on bossi ja palauttaa sen oliona
 def hae_bossi():
 
     sql = 'SELECT * FROM viholliset WHERE bossi = "1" ORDER by RAND() LIMIT 1'
@@ -199,6 +205,7 @@ def hae_bossi():
     return vihollinen
 
 
+# Muuttaa kilometrit päivitki ja paluttaa ajan
 def km_to_day(matka):
 
     if matka < 75:
@@ -322,6 +329,7 @@ def onko_kohteessa_sormus(pelaaja):
             return False
 
 
+#Ohjaa päävalikon toimintaa
 def paavalikko():
 
     # Ottaa vastaan käyttäjän näppäinpainalluksen ja toteuttaa sen perusteella tietyn funktion
@@ -383,6 +391,7 @@ def paavalikko():
     return pelaaja
 
 
+# Hakee nykyisen kohteen kordinaatit pelaajan sijainnin perusteella ja käyttää km to day funktiota palauttaakseen päivienmäärän.
 def paivien_lisaaja(haluttu_kohde_id, pelaaja):
 
     sql = f'''SELECT airport.id, airport.fantasia_nimi, airport.latitude_deg, airport.longitude_deg 
@@ -397,7 +406,7 @@ def paivien_lisaaja(haluttu_kohde_id, pelaaja):
     return km_to_day(matka)
 
 
-#hakee pisteet
+#hakee Top 10  pisteet tietokannasta
 def pisteet():
     sql = f'''SELECT nimi, paivat FROM pisteet ORDER BY (paivat) LIMIT 10;'''
     kursori = yhteys.cursor(dictionary=True)
