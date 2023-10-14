@@ -14,7 +14,6 @@ sininen = colorama.Fore.LIGHTBLUE_EX
 vari_reset = Style.RESET_ALL
 
 
-
 def event_valitsin(pelaaja):
     if int(pelaaja.sijainti) == 1:
         uudentoivon_kyla_event(pelaaja)
@@ -55,8 +54,6 @@ def uudentoivon_kyla_event(pelaaja):
               f'Tarinoidessasi unohdat ajantajun ja matkaasi lisätään {punainen}yksi{vari_reset} päivä.\n')
         pelaaja.menneet_paivat += 1
 
-    return
-
 
 def ruoholaakso_event(pelaaja):
     event_nro = random.randint(1, 1)
@@ -78,8 +75,6 @@ def ruoholaakso_event(pelaaja):
             else:
                 vaihtoehto = input(f'Valitse {vihrea}1{vari_reset}/{punainen}2{vari_reset}: ')
 
-    return
-
 
 def velhotorni_event():
     event_nro = random.randint(1, 1)
@@ -90,6 +85,7 @@ def velhotorni_event():
         vaihtoehto = input(f'{vihrea}1. Otatko eliksiirit mukaasi?{vari_reset} {punainen}2. Jätätkö ne siihen?{vari_reset}: \n')
 
         while True:
+
             if vaihtoehto == '1':
                 print('Käsissäsi on liikaa eliksiirejä.\n'
                       'Eliksiirit kaatuvat ja hajoavat maahan.\n')
@@ -101,8 +97,6 @@ def velhotorni_event():
 
             else:
                 vaihtoehto = input(f'Valitse {vihrea}1{vari_reset}/{punainen}2{vari_reset}: ')
-
-    return
 
 
 def varisrame_event(pelaaja):
@@ -128,8 +122,6 @@ def varisrame_event(pelaaja):
             else:
                 vaihtoehto = input(f'Valitse {vihrea}1{vari_reset}/{punainen}2{vari_reset}: ')
 
-    return
-
 
 def noitametsa_event(pelaaja):
     event_nro = random.randint(1, 1)
@@ -151,19 +143,21 @@ def noitametsa_event(pelaaja):
             else:
                 vaihtoehto = input(f'Valitse {vihrea}1{vari_reset}/{punainen}2{vari_reset}: ')
 
-    return
-
 
 def sammakkojarvi_event(pelaaja):
     event_nro = random.randint(1, 1)
 
     if event_nro == 1:
+
         print('Saavut salaperäisen Sammakkojärven rannalle.\n'
               'Järvestä kohoaa outoja ääniä ja näet, että järvi on täynnä sammakoita.\n'
               'Yksi sammakoista pyytää suukkoa. Annatko sammakolle suukon?\n')
         vaihtoehto = input(f'{vihrea}1. Anna suukko{vari_reset} {punainen}2. Kieltäydy tarjouksesta kohteliaasti{vari_reset}: ')
+
         while True:
+
             if vaihtoehto == '1':
+
                 print('Suostut antamaan sammakolle suukon, ja yhtäkkiä sammakko muuttuu kauniiksi prinssiksi!\n'
                       'Pelastit prinssin elämän ja löysit oman seikkailurakkautesi!\n'
                       f'Rakkaudesta täyttyneenä saat {punainen}MAX HP{vari_reset}\n')
@@ -171,13 +165,12 @@ def sammakkojarvi_event(pelaaja):
                 break
 
             if vaihtoehto == '2':
+
                 print('Päätät olla suutelematta sammakkoa ja jatkat matkaasi.\n')
                 break
 
             else:
                 vaihtoehto = input(f'Valitse {vihrea}1{vari_reset}/{punainen}2{vari_reset}: ')
-
-    return
 
 
 def suurentarmon_kaupunki_event(pelaaja):
@@ -190,6 +183,7 @@ def suurentarmon_kaupunki_event(pelaaja):
         vaihtoehto = input(f'{vihrea}1. Päästätkö lohikäärmeet vapaaksi?{vari_reset} {punainen}2. Jätätkö ne häkkiin?{vari_reset}: ')
 
         while True:
+
             if vaihtoehto == '1':
                 print('Livahdat kojun taakse ja tiirikoit poikasten häkin auki.\n'
                       'Poikaset alkavat riehua torilla ja aiheuttavat kaaosta.\n'
@@ -204,14 +198,13 @@ def suurentarmon_kaupunki_event(pelaaja):
             else:
                 vaihtoehto = input(f'Valitse {vihrea}1{vari_reset}/{punainen}2{vari_reset}: ')
 
-    return
-
 
 def hiisisuo_event(pelaaja):
 
     event_nro = random.randint(1, 1)
 
     if event_nro == 1:
+
         print('Jatkat matkaasi ja saavut säteilevään Hiisisuohon.\n'
               'Suo on täynnä kristallinkirkkaita kukkasia.\n'
               'Yhtäkkiä huomaat, että pensaan takana on kaksi pientä keijua\n')
@@ -219,6 +212,7 @@ def hiisisuo_event(pelaaja):
         vaihtoehto = input(f'{vihrea}1. Lähesty keijuja varovasti{vari_reset} {punainen}2. Yritä piiloutua ja kiertää keijut{vari_reset}: ')
 
     while True:
+
         if vaihtoehto == '1':
 
             print('Keijut tulevat iloisesti luoksesi ja kertovat sinulle tarinoita ja lauluja.\n'
@@ -226,8 +220,8 @@ def hiisisuo_event(pelaaja):
                   'ja saat liidellä keijujen kanssa kukkien loistossa. Päiväsi muuttuu taianomaiseksi!\n')
             break
 
-
         if vaihtoehto == '2':
+
             print('Yrität kiertää keijut, mutta ne havaitsevat sinut.\n'
                   'Keijut tönäisevät sinut suohon! Olet jumissa suossa yön yli.\n'
                   f'Matkaasi lisätään {punainen}1{vari_reset} päivä\n')
@@ -236,8 +230,6 @@ def hiisisuo_event(pelaaja):
 
         else:
             vaihtoehto = input(f'Valitse {vihrea}1{vari_reset}/{punainen}2{vari_reset}: ')
-
-    return
 
 
 def peikkoluola_event(pelaaja):
@@ -248,7 +240,9 @@ def peikkoluola_event(pelaaja):
               'Astelet sillan yli kun kuulet jonkun kutsuvan sinua.\n')
 
         vaihtoehto = input(f'{vihrea}1. Tutki rohkeasti, kuka on sillan alla{vari_reset}, {punainen}2. Jatka matkaasi kohti Peikkoluolaa{vari_reset}: ')
+
         while True:
+
             if vaihtoehto == '1':
                 print('Kurkkaat rohkeasti sillan alle ja tunnet nopean riuhtaisun.\n'
                       'Vihreä peikko vetää sinut sillan alle ja antaa sinulle selkäsaunan.\n')
@@ -262,6 +256,3 @@ def peikkoluola_event(pelaaja):
 
             else:
                 vaihtoehto = input(f'Valitse {vihrea}1{vari_reset}/{punainen}2{vari_reset}: ')
-
-    return
-
