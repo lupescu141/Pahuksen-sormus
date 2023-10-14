@@ -1032,9 +1032,9 @@ def tulipallo(pelaaja, vihollinen):
 
 # Ääni asetukset
 pygame.mixer.init()
-pygame.mixer.Channel(0).set_volume(0.06)
-pygame.mixer.Channel(1).set_volume(0.2)
-pygame.mixer.Channel(2).set_volume(0.2)
+pygame.mixer.Channel(0).set_volume(0.2)
+pygame.mixer.Channel(1).set_volume(0.4)
+pygame.mixer.Channel(2).set_volume(0.4)
 
 # Pelin alustus
 alkusanat()
@@ -1119,7 +1119,7 @@ while peli_lapi == False:
         print(f'Olet saapunut tulivuoren huipulle. Allasi hehkuu valtava laavameri.\n'
               f'Pitelet sormusta kädessäsi, valmiina heittämään sen tulivuoreen...\n'
               f'Yhtäkkiä sormus alkaa polttaa kädessäsi ja se putoaa jalkoihisi.\n'
-              f'Näät kuinka sormus alkaa hehkua ja alkaa sen ympärille myodustumaan valtava musta savupilvi\n'
+              f'Näet kuinka sormus alkaa hehkua ja alkaa sen ympärille muodustumaan valtava musta savupilvi\n'
               f'Savupilvestä astuu ulos sormuksen kuolleen haltijan {punainen}Gorgonin{vari_reset} henki.\n')
 
         print(f'{punainen}Gorgon: "Maailma on MINUN! Valmistaudu KUOLEMAAN!"\n')
