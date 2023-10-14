@@ -127,8 +127,6 @@ def esineen_arvonta(inventaario):
         print(f'Et löytänyt esineitä')
         print('')
 
-    return
-
 
 # Kysyy käyttäjältä syötteen ja sen perusteella palauttaa pelaajan arvot täysille
 def haluatko_nukkua(pelaaja):
@@ -422,7 +420,6 @@ def pisteet():
     input(f'{keltainen}Paina Enter palataksesi valikkoon...{vari_reset}\n')
 
 
-
 # Sulkee ohjelman
 def poistu():
     sys.exit(0)
@@ -588,6 +585,7 @@ def sormus_arpominen(pelaaja):
               WHERE peli_id = "{pelaaja.id}"'''
     kursori.execute(sql)
     return sijainti_id['id']
+
 
 # Hakee taidot
 def taito_haku(pelaaja):
@@ -832,7 +830,7 @@ def tallennus(pelaaja, inventaario):
     kursori = yhteys.cursor()
     kursori.execute(sql)
 
-    for esine in  inventaario:
+    for esine in inventaario:
         sql = f'INSERT INTO inventaario (pelaajan_id, esineen_id) VALUES ({pelaaja.id}, {esine["esineen_id"]})'
         kursori = yhteys.cursor(dictionary=True)
         kursori.execute(sql)
